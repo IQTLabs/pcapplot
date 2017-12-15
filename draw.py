@@ -9,6 +9,7 @@ BLUE = (0, 0, 255)
 
 WIDTH = 9
 HEIGHT = 9
+GRID_LINE = 16
 ROWS = 256
 COLUMNS = 256
 MARGIN = 1
@@ -21,9 +22,15 @@ for row in range(ROWS):
     grid.append([])
     for column in range(COLUMNS):
         grid[row].append(0)
+subgrid = []
+for row in range(ROWS/GRID_LINE):
+    subgrid.append([])
+    for column in range(COLUMNS/GRID_LINE):
+        subgrid[row].append(0)
 
-grid[1][5] = 1
-grid[40][34] = 2
+# MANIPULATE DATA HERE
+grid[1][15] = 1
+grid[2][32] = 2
 grid[3][200] = 1
 grid[100][3] = 2
 grid[99][99] = 1
@@ -38,11 +45,35 @@ upload=myfont.render('U', True, WHITE)
 bidirectional=myfont.render('B', True, WHITE)
 screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("PCAP Plot")
-screen.fill(BLACK)
+screen.fill(WHITE)
 
+# check which grids should be drawn
 for row in range(ROWS):
     for column in range(COLUMNS):
-        color = BLACK
+        if grid[row][column] != 0:
+            subgrid[row / GRID_LINE][column / GRID_LINE] = 1
+
+# draw grid
+for row in range(ROWS/GRID_LINE):
+    for column in range(COLUMNS/GRID_LINE):
+        if subgrid[row][column] == 1:
+            pygame.draw.rect(screen,
+                             BLACK,
+                             [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN-1,
+                              (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN-1,
+                              (WIDTH*18)+MARGIN-2,
+                              (HEIGHT*18)+MARGIN-2])
+            pygame.draw.rect(screen,
+                             WHITE,
+                             [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN,
+                              (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN,
+                              (WIDTH*18)+MARGIN-4,
+                              (HEIGHT*18)+MARGIN-4])
+
+# draw cells
+for row in range(ROWS):
+    for column in range(COLUMNS):
+        color = WHITE
         if grid[row][column] == 1:
             color = BLUE
         elif grid[row][column] == 2:
@@ -57,6 +88,7 @@ for row in range(ROWS):
             screen.blit(download, cell)
         if grid[row][column] == 2:
             screen.blit(upload, cell)
+
 
 pygame.display.flip()
 
