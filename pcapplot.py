@@ -1,4 +1,8 @@
-from scapy.all import *
+from cymruwhois import Client
+from scapy.utils import rdpcap
+from scapy.layers.inet import IP, TCP, UDP
+
+import os
 import sys
 
 def ip_class(ip):
@@ -105,11 +109,31 @@ def ip_class(ip):
     return result
 
 def main():
+    print "Reading pcap file...",
+    sys.stdout.flush()
     capture = rdpcap(sys.argv[1])
+    print "done"
+    print "Storing sessions...",
+    sys.stdout.flush()
     sessions = capture.sessions()
+    print "done"
+    sys.stdout.flush()
     aggr_dict = {}
 
+    i = 0
+    num_sessions = float(len(sessions))
     for session in sessions:
+        i += 1
+        rows,columns = os.popen('stty size', 'r').read().split()
+        rows = int(rows)
+        columns = int(columns)
+
+        sys.stdout.write('\r')
+        sys.stdout.write(' ' * columns)
+        sys.stdout.write('\r')
+        sys.stdout.write('{}% done'.format((i / num_sessions) * 100))
+        sys.stdout.flush()
+
         payload_len = 0
         s_num = 0
         s_type = "UNKNOWN"
@@ -120,25 +144,47 @@ def main():
                 p_num = 0
                 for pkt in sessions[session][TCP]:
                     p_num += 1
-                    payload_len += len(pkt.payload)
+                    try:
+                        payload_len += len(pkt.payload)
+                    except:
+                        pass
             elif sessions[session][UDP]:
                 s_type = "UDP"
                 s_num += 1
                 p_num = 0
                 for pkt in sessions[session][UDP]:
                     p_num += 1
-                    payload_len += len(pkt.payload)
+                    try:
+                        payload_len += len(pkt.payload)
+                    except:
+                        pass
             if s_type != "UNKNOWN":
-                print "src_ip: ", sessions[session][0][IP].src,
-                print ip_class(sessions[session][0][IP].src)
-                print "src_port: ", sessions[session][0][IP].sport
-                print "dst_ip: ", sessions[session][0][IP].dst,
-                print ip_class(sessions[session][0][IP].dst)
-                print "dst_port:", sessions[session][0][IP].dport
-                print "sessions: ", s_num
-                print "packets:", p_num
-                print "total payload length:", payload_len
-                print
+                try:
+                    if sessions[session][0][IP].src not in aggr_dict:
+                        aggr_dict[sessions[session][0][IP].src] = {}
+                    if sessions[session][0][IP].dst not in aggr_dict[sessions[session][0][IP].src]:
+                        aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = 0
+                    aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = payload_len
+                except:
+                    pass
+                #print "src_ip: ", sessions[session][0][IP].src,
+                #print ip_class(sessions[session][0][IP].src)
+                #print "src_port: ", sessions[session][0][IP].sport
+                #print "dst_ip: ", sessions[session][0][IP].dst,
+                #print ip_class(sessions[session][0][IP].dst)
+                #print "dst_port:", sessions[session][0][IP].dport
+                #print "sessions: ", s_num
+                #print "packets:", p_num
+                #print "total payload length:", payload_len
+                #print
+    c = Client()
+    for host in aggr_dict:
+        try:
+            r = c.lookup(host)
+        except:
+            print host, "FAILED TO LOOKUP ASN", aggr_dict[host]
+        print host, r.asn, r.owner, aggr_dict[host]
+        sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
