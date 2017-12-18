@@ -177,14 +177,50 @@ def main():
                 #print "packets:", p_num
                 #print "total payload length:", payload_len
                 #print
+    asn_dict = {}
     c = Client()
+    print
     for host in aggr_dict:
-        try:
-            r = c.lookup(host)
-        except:
-            print host, "FAILED TO LOOKUP ASN", aggr_dict[host]
-        print host, r.asn, r.owner, aggr_dict[host]
-        sys.stdout.flush()
+        if len(aggr_dict[host]) > 1:
+            # get sent bytes
+            print "host:", host
+            for peer in aggr_dict[host]:
+                try:
+                    r = c.lookup(peer)
+                    if not r.asn:
+                        # RFC 1918, etc.
+                        print "peer:", peer, "bytes out :", aggr_dict[host][peer]
+                    else:
+                        # public ip space
+                        if r.asn in asn_dict:
+                            asn_dict[r.asn]['bytes_out'] += aggr_dict[host][peer]
+                        else:
+                            asn_dict[r.asn] = {'owner': r.owner, 'bytes_out': aggr_dict[host][peer], 'bytes_in': 0}
+                except Exception as e:
+                    print peer, "FAILED TO LOOKUP ASN"
+                    print str(e)
+        else:
+            # get received bytes
+            dst = None
+            # there is only one to loop through
+            for d in aggr_dict[host]:
+                dst = d
+            try:
+                r = c.lookup(host)
+                if not r.asn:
+                    # RFC 1918, etc.
+                    print "peer:", host, "bytes in:", aggr_dict[host][dst]
+                else:
+                    # public ip space
+                    if r.asn in asn_dict:
+                        asn_dict[r.asn]['bytes_in'] += aggr_dict[host][dst]
+                    else:
+                        asn_dict[r.asn] = {'owner': r.owner, 'bytes_in': aggr_dict[host][dst], 'bytes_out': 0}
+            except Exception as e:
+                print host, "FAILED TO LOOKUP ASN"
+                print str(e)
+    for asn in asn_dict:
+        print "external asn:", asn, "asn owner:", asn_dict[asn]['owner'], "total bytes sent:", asn_dict[asn]['bytes_out'], "total bytes received:", asn_dict[asn]['bytes_in']
 
 if __name__ == "__main__":
     main()
