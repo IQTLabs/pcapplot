@@ -135,4 +135,4 @@ def draw():
 
 if __name__ == "__main__":
     draw()
-    print interpolate_tuple((0,0,255), (255,0,0), 100)
+    print interpolate_tuple((0,255,255), (255,0,0), 100)
