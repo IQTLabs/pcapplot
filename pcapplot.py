@@ -5,6 +5,47 @@ from scapy.layers.inet import IP, TCP, UDP
 import os
 import sys
 
+from draw import draw
+
+def populate_1918_space():
+    internal_map = {}
+    inner = 0
+    outer = 0
+
+    # 10.x.x.x
+    for oct1 in range(10,11):
+        for oct2 in range(0,256):
+            for oct3 in range(0,256):
+                internal_map[str(oct1)+'.'+str(oct2)+'.'+str(oct3)] = [outer, inner]
+                if inner == 289:
+                    outer += 1
+                    inner = 0
+                else:
+                    inner += 1
+    # 172.16-31.x.x
+    for oct1 in range(172,173):
+        for oct2 in range(16,32):
+            for oct3 in range(0,256):
+                internal_map[str(oct1)+'.'+str(oct2)+'.'+str(oct3)] = [outer, inner]
+                if inner == 289:
+                    outer += 1
+                    inner = 0
+                else:
+                    inner += 1
+
+    # 192.168.x.x
+    for oct1 in range(192,193):
+        for oct2 in range(168,169):
+            for oct3 in range(0,256):
+                internal_map[str(oct1)+'.'+str(oct2)+'.'+str(oct3)] = [outer, inner]
+                if inner == 289:
+                    outer += 1
+                    inner = 0
+                else:
+                    inner += 1
+
+    return internal_map
+
 def ip_class(ip):
     classes = ['public',          # 0
                '0.0.0.0/8',       # 1
@@ -177,6 +218,17 @@ def main():
                 #print "packets:", p_num
                 #print "total payload length:", payload_len
                 #print
+    ROWS = 289
+    COLUMNS = 289
+
+    private_grid = []
+    for row in range(ROWS):
+        private_grid.append([])
+        for column in range(COLUMNS):
+            private_grid[row].append(0)
+
+    private_map = populate_1918_space()
+
     asn_dict = {}
     c = Client()
     print
@@ -190,6 +242,8 @@ def main():
                     if not r.asn:
                         # RFC 1918, etc.
                         print "peer:", peer, "bytes out :", aggr_dict[host][peer]
+                        priv_arr = private_map[".".join(peer.split(".")[:-1])]
+                        private_grid[priv_arr[0]][priv_arr[1]] = 1
                     else:
                         # public ip space
                         if r.asn in asn_dict:
@@ -210,6 +264,8 @@ def main():
                 if not r.asn:
                     # RFC 1918, etc.
                     print "peer:", host, "bytes in:", aggr_dict[host][dst]
+                    priv_arr = private_map[".".join(host.split(".")[:-1])]
+                    private_grid[priv_arr[0]][priv_arr[1]] = 2
                 else:
                     # public ip space
                     if r.asn in asn_dict:
@@ -219,8 +275,34 @@ def main():
             except Exception as e:
                 print host, "FAILED TO LOOKUP ASN"
                 print str(e)
+
+    ROWS = 256
+    COLUMNS = 256
+
+    asn_grid = []
+    for row in range(ROWS):
+        asn_grid.append([])
+        for column in range(COLUMNS):
+            asn_grid[row].append(0)
+
     for asn in asn_dict:
-        print "external asn:", asn, "asn owner:", asn_dict[asn]['owner'], "total bytes sent:", asn_dict[asn]['bytes_out'], "total bytes received:", asn_dict[asn]['bytes_in']
+        asn_num = int(asn)
+        if asn_num < 65536:
+            if asn_dict[asn]['bytes_out'] > asn_dict[asn]['bytes_in']:
+                asn_grid[asn_num/ROWS][asn_num%ROWS] = 1
+            elif asn_dict[asn]['bytes_out'] < asn_dict[asn]['bytes_in']:
+                asn_grid[asn_num/ROWS][asn_num%ROWS] = 2
+            else:
+                asn_grid[asn_num/ROWS][asn_num%ROWS] = 3
+        else:
+            print "ALERT!!!! high",
+        print "external asn:", asn,
+        print "asn owner:", asn_dict[asn]['owner'],
+        print "total bytes sent:", asn_dict[asn]['bytes_out'],
+        print "total bytes received:", asn_dict[asn]['bytes_in']
+    return asn_grid, private_grid
 
 if __name__ == "__main__":
-    main()
+    asn_grid, private_grid = main()
+    draw(asn_grid, "ASN")
+    draw(private_grid, "Private RFC 1918", ROWS=289, COLUMNS=289, GRID_LINE=17)
