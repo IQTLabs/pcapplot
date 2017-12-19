@@ -161,7 +161,23 @@ def main():
     sys.stdout.flush()
     aggr_dict = {}
 
+    ROWS = 256
+    COLUMNS = 256
+
+    sport_grid = []
+    for row in range(ROWS):
+        sport_grid.append([])
+        for column in range(COLUMNS):
+            sport_grid[row].append(0)
+
+    dport_grid = []
+    for row in range(ROWS):
+        dport_grid.append([])
+        for column in range(COLUMNS):
+            dport_grid[row].append(0)
+
     i = 0
+    ip_dports = {}
     num_sessions = float(len(sessions))
     for session in sessions:
         i += 1
@@ -206,8 +222,14 @@ def main():
                     if sessions[session][0][IP].dst not in aggr_dict[sessions[session][0][IP].src]:
                         aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = 0
                     aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = payload_len
+
+                    # get ports
+                    if sessions[session][0][IP].src not in ip_dports:
+                        ip_dports[sessions[session][0][IP].src] = []
+                    ip_dports[sessions[session][0][IP].src].append(sessions[session][0][IP].dport)
                 except:
                     pass
+
                 #print "src_ip: ", sessions[session][0][IP].src,
                 #print ip_class(sessions[session][0][IP].src)
                 #print "src_port: ", sessions[session][0][IP].sport
@@ -229,6 +251,8 @@ def main():
 
     private_map = populate_1918_space()
 
+    ROWS = 256
+    COLUMNS = 256
     asn_dict = {}
     c = Client()
     print
@@ -236,6 +260,8 @@ def main():
         if len(aggr_dict[host]) > 1:
             # get sent bytes
             print "host:", host
+            for port in ip_dports[host]:
+                dport_grid[port/ROWS][port%ROWS] = 1
             for peer in aggr_dict[host]:
                 try:
                     r = c.lookup(peer)
@@ -254,6 +280,9 @@ def main():
                     print peer, "FAILED TO LOOKUP ASN"
                     print str(e)
         else:
+            if host in ip_dports:
+                for port in ip_dports[host]:
+                    sport_grid[port/ROWS][port%ROWS] = 2
             # get received bytes
             dst = None
             # there is only one to loop through
@@ -276,9 +305,6 @@ def main():
                 print host, "FAILED TO LOOKUP ASN"
                 print str(e)
 
-    ROWS = 256
-    COLUMNS = 256
-
     asn_grid = []
     for row in range(ROWS):
         asn_grid.append([])
@@ -300,9 +326,11 @@ def main():
         print "asn owner:", asn_dict[asn]['owner'],
         print "total bytes sent:", asn_dict[asn]['bytes_out'],
         print "total bytes received:", asn_dict[asn]['bytes_in']
-    return asn_grid, private_grid
+    return asn_grid, private_grid, sport_grid, dport_grid
 
 if __name__ == "__main__":
-    asn_grid, private_grid = main()
+    asn_grid, private_grid, sport_grid, dport_grid = main()
     draw(asn_grid, "ASN")
     draw(private_grid, "Private RFC 1918", ROWS=289, COLUMNS=289, GRID_LINE=17)
+    draw(sport_grid, "Services")
+    draw(dport_grid, "Client Ports")
