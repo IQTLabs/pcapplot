@@ -30,7 +30,7 @@ def interpolate_tuple(startcolor, goalcolor, steps):
 
     return gradient
 
-def draw():
+def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     GREEN = (0, 255, 0)
@@ -40,18 +40,16 @@ def draw():
     WIDTH = 9
     HEIGHT = 9
     GRID_LINE = 16
-    ROWS = 256
-    COLUMNS = 256
     MARGIN = 1
-    W_HEIGHT = 2561
-    W_WIDTH = 2561
+    W_HEIGHT = (ROWS*10)+1
+    W_WIDTH = (COLUMNS*10)+1
     WINDOW_SIZE = [W_HEIGHT, W_WIDTH]
 
-    grid = []
-    for row in range(ROWS):
-        grid.append([])
-        for column in range(COLUMNS):
-            grid[row].append(0)
+    #grid = []
+    #for row in range(ROWS):
+    #    grid.append([])
+    #    for column in range(COLUMNS):
+    #        grid[row].append(0)
     subgrid = []
     for row in range(ROWS/GRID_LINE):
         subgrid.append([])
@@ -59,13 +57,13 @@ def draw():
             subgrid[row].append(0)
 
     # MANIPULATE DATA HERE
-    grid[1][15] = 1
-    grid[2][32] = 2
-    grid[3][200] = 1
-    grid[100][3] = 2
-    grid[99][99] = 1
-    grid[240][200] = 2
-    grid[45][250] = 1
+    #grid[1][15] = 1
+    #grid[2][32] = 2
+    #grid[3][200] = 1
+    #grid[100][3] = 2
+    #grid[99][99] = 1
+    #grid[240][200] = 2
+    #grid[45][250] = 1
 
     pygame.init()
 
@@ -74,7 +72,7 @@ def draw():
     upload=myfont.render('U', True, WHITE)
     bidirectional=myfont.render('B', True, WHITE)
     screen = pygame.display.set_mode(WINDOW_SIZE)
-    pygame.display.set_caption("PCAP Plot")
+    pygame.display.set_caption(grid_type + " Plot")
     screen.fill(WHITE)
 
     # check which grids should be drawn
@@ -105,9 +103,11 @@ def draw():
         for column in range(COLUMNS):
             color = WHITE
             if grid[row][column] == 1:
-                color = (column, 0, 255)
+                color = (255, 0, 255)
             elif grid[row][column] == 2:
-                color = (255, 0, column)
+                color = (255, 0, 255)
+            elif grid[row][column] == 3:
+                color = (0, 255, 255)
             cell = pygame.draw.rect(screen,
                                     color,
                                     [(MARGIN + WIDTH) * column + MARGIN,
@@ -118,6 +118,8 @@ def draw():
                 screen.blit(download, cell)
             if grid[row][column] == 2:
                 screen.blit(upload, cell)
+            if grid[row][column] == 3:
+                screen.blit(bidirectional, cell)
 
     pygame.display.flip()
 
@@ -130,9 +132,8 @@ def draw():
 
     rect = pygame.Rect(0, 0, W_HEIGHT, W_WIDTH)
     sub = screen.subsurface(rect)
-    pygame.image.save(sub, "screenshot.jpg")
+    pygame.image.save(sub, "map_" + grid_type + ".jpg")
     pygame.quit()
 
 if __name__ == "__main__":
-    draw()
     print interpolate_tuple((0,255,255), (255,0,0), 100)
