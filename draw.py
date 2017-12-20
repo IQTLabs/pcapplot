@@ -1,5 +1,4 @@
 import pygame
-import time
 
 def interpolate_tuple(startcolor, goalcolor, steps):
     """
@@ -45,25 +44,11 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
     W_WIDTH = (COLUMNS*10)+1
     WINDOW_SIZE = [W_HEIGHT, W_WIDTH]
 
-    #grid = []
-    #for row in range(ROWS):
-    #    grid.append([])
-    #    for column in range(COLUMNS):
-    #        grid[row].append(0)
     subgrid = []
     for row in range(ROWS/GRID_LINE):
         subgrid.append([])
         for column in range(COLUMNS/GRID_LINE):
             subgrid[row].append(0)
-
-    # MANIPULATE DATA HERE
-    #grid[1][15] = 1
-    #grid[2][32] = 2
-    #grid[3][200] = 1
-    #grid[100][3] = 2
-    #grid[99][99] = 1
-    #grid[240][200] = 2
-    #grid[45][250] = 1
 
     pygame.init()
 
@@ -123,16 +108,9 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
 
     pygame.display.flip()
 
-    done = False
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-        time.sleep(1)
-
     rect = pygame.Rect(0, 0, W_HEIGHT, W_WIDTH)
     sub = screen.subsurface(rect)
-    pygame.image.save(sub, "map_" + grid_type + ".jpg")
+    pygame.image.save(sub, "www/static/img/maps/map_" + "_".join(grid_type.split()) + ".jpg")
     pygame.quit()
 
 if __name__ == "__main__":

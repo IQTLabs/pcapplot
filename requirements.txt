@@ -1,0 +1,3 @@
+cymruwhois==1.0
+pygame
+scapy>=2.3.3
