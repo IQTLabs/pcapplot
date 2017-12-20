@@ -1,11 +1,18 @@
 from cymruwhois import Client
 from scapy.utils import rdpcap
 from scapy.layers.inet import IP, TCP, UDP
+from subprocess import call
 
+import ast
 import os
+import shutil
+import signal
 import sys
 
 from draw import draw
+
+def signal_handler(signal, frame):
+    os._exit(0)
 
 def populate_1918_space():
     internal_map = {}
@@ -149,10 +156,10 @@ def ip_class(ip):
     # anything else is not a valid ipv4 address
     return result
 
-def main():
-    print "Reading pcap file...",
+def process_pcaps(pcap_file):
+    print "Reading pcap file " + pcap_file + "...",
     sys.stdout.flush()
-    capture = rdpcap(sys.argv[1])
+    capture = rdpcap(pcap_file)
     print "done"
     print "Storing sessions...",
     sys.stdout.flush()
@@ -217,16 +224,20 @@ def main():
                         pass
             if s_type != "UNKNOWN":
                 try:
-                    if sessions[session][0][IP].src not in aggr_dict:
-                        aggr_dict[sessions[session][0][IP].src] = {}
-                    if sessions[session][0][IP].dst not in aggr_dict[sessions[session][0][IP].src]:
-                        aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = 0
-                    aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = payload_len
+                    if (sessions[session][0][IP].src != '0.0.0.0' and
+                        sessions[session][0][IP].src != '255.255.255.255' and
+                        sessions[session][0][IP].dst != '0.0.0.0' and
+                        sessions[session][0][IP].dst != '255.255.255.255'):
+                        if sessions[session][0][IP].src not in aggr_dict:
+                            aggr_dict[sessions[session][0][IP].src] = {}
+                        if sessions[session][0][IP].dst not in aggr_dict[sessions[session][0][IP].src]:
+                            aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = 0
+                        aggr_dict[sessions[session][0][IP].src][sessions[session][0][IP].dst] = payload_len
 
-                    # get ports
-                    if sessions[session][0][IP].src not in ip_dports:
-                        ip_dports[sessions[session][0][IP].src] = []
-                    ip_dports[sessions[session][0][IP].src].append(sessions[session][0][IP].dport)
+                        # get ports
+                        if sessions[session][0][IP].src not in ip_dports:
+                            ip_dports[sessions[session][0][IP].src] = []
+                        ip_dports[sessions[session][0][IP].src].append(sessions[session][0][IP].dport)
                 except:
                     pass
 
@@ -260,16 +271,21 @@ def main():
         if len(aggr_dict[host]) > 1:
             # get sent bytes
             print "host:", host
+            with open('www/static/img/maps/manifest.txt', 'a+') as f:
+                f.write(pcap_file.split("/")[-1] + ": " + host + "\n")
             for port in ip_dports[host]:
                 dport_grid[port/ROWS][port%ROWS] = 1
             for peer in aggr_dict[host]:
                 try:
                     r = c.lookup(peer)
                     if not r.asn:
-                        # RFC 1918, etc.
-                        print "peer:", peer, "bytes out :", aggr_dict[host][peer]
-                        priv_arr = private_map[".".join(peer.split(".")[:-1])]
-                        private_grid[priv_arr[0]][priv_arr[1]] = 1
+                        if not r.cc:
+                            # RFC 1918, etc.
+                            #print "peer:", peer, "bytes out :", aggr_dict[host][peer]
+                            priv_arr = private_map[".".join(peer.split(".")[:-1])]
+                            private_grid[priv_arr[0]][priv_arr[1]] = 1
+                        else:
+                            print "found public IP without an ASN:", peer, "bytes out :", aggr_dict[host][peer]
                     else:
                         # public ip space
                         if r.asn in asn_dict:
@@ -278,7 +294,7 @@ def main():
                             asn_dict[r.asn] = {'owner': r.owner, 'bytes_out': aggr_dict[host][peer], 'bytes_in': 0}
                 except Exception as e:
                     print peer, "FAILED TO LOOKUP ASN"
-                    print str(e)
+                    print sys.exc_info()[0], str(e)
         else:
             if host in ip_dports:
                 for port in ip_dports[host]:
@@ -291,10 +307,13 @@ def main():
             try:
                 r = c.lookup(host)
                 if not r.asn:
-                    # RFC 1918, etc.
-                    print "peer:", host, "bytes in:", aggr_dict[host][dst]
-                    priv_arr = private_map[".".join(host.split(".")[:-1])]
-                    private_grid[priv_arr[0]][priv_arr[1]] = 2
+                    if not r.cc:
+                        # RFC 1918, etc.
+                        #print "peer:", host, "bytes in:", aggr_dict[host][dst]
+                        priv_arr = private_map[".".join(host.split(".")[:-1])]
+                        private_grid[priv_arr[0]][priv_arr[1]] = 2
+                    else:
+                        print "found public IP without an ASN:", host, "bytes out :", aggr_dict[host][dst]
                 else:
                     # public ip space
                     if r.asn in asn_dict:
@@ -303,7 +322,7 @@ def main():
                         asn_dict[r.asn] = {'owner': r.owner, 'bytes_in': aggr_dict[host][dst], 'bytes_out': 0}
             except Exception as e:
                 print host, "FAILED TO LOOKUP ASN"
-                print str(e)
+                print sys.exc_info()[0], str(e)
 
     asn_grid = []
     for row in range(ROWS):
@@ -312,25 +331,160 @@ def main():
             asn_grid[row].append(0)
 
     for asn in asn_dict:
-        asn_num = int(asn)
-        if asn_num < 65536:
-            if asn_dict[asn]['bytes_out'] > asn_dict[asn]['bytes_in']:
-                asn_grid[asn_num/ROWS][asn_num%ROWS] = 1
-            elif asn_dict[asn]['bytes_out'] < asn_dict[asn]['bytes_in']:
-                asn_grid[asn_num/ROWS][asn_num%ROWS] = 2
+        try:
+            asn_num = int(asn)
+            if asn_num < 65536:
+                if asn_dict[asn]['bytes_out'] > asn_dict[asn]['bytes_in']:
+                    asn_grid[asn_num/ROWS][asn_num%ROWS] = 1
+                elif asn_dict[asn]['bytes_out'] < asn_dict[asn]['bytes_in']:
+                    asn_grid[asn_num/ROWS][asn_num%ROWS] = 2
+                else:
+                    asn_grid[asn_num/ROWS][asn_num%ROWS] = 3
             else:
-                asn_grid[asn_num/ROWS][asn_num%ROWS] = 3
-        else:
-            print "ALERT!!!! high",
-        print "external asn:", asn,
-        print "asn owner:", asn_dict[asn]['owner'],
-        print "total bytes sent:", asn_dict[asn]['bytes_out'],
-        print "total bytes received:", asn_dict[asn]['bytes_in']
+                print "ALERT!!!! high",
+                print "external asn:", asn,
+                print "asn owner:", asn_dict[asn]['owner'],
+                print "total bytes sent:", asn_dict[asn]['bytes_out'],
+                print "total bytes received:", asn_dict[asn]['bytes_in']
+        except:
+           pass
     return asn_grid, private_grid, sport_grid, dport_grid
 
+def build_html():
+    list_obj = """
+  <li class="ui-state-default">
+      <div id="wrapper">
+      <div id="first"><p>%s</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="%s"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;%s ASN&lt;/b&gt;&lt;br /&gt; Capture: %s"
+         href="%s"><img src="%s" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="%s"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;%s Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: %s"
+         href="%s"><img src="%s" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="%s"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;%s Source Ports&lt;/b&gt;&lt;br /&gt; Capture: %s"
+         href="%s"><img src="%s" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="%s"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;%s Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: %s"
+         href="%s"><img src="%s" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+"""
+    legend = """%s<br />Host: %s<br /><br />Left to right:<br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports"""
+    image_paths = []
+    for root, dirs, files in os.walk('www/static/img/maps'):
+        for file in files:
+            if file.endswith(".jpg"):
+                image_paths.append(os.path.join(root, file))
+    devices = {}
+    for image in image_paths:
+        try:
+            if "-".join(image.split('-')[1:-3]) not in devices:
+                devices["-".join(image.split('-')[1:-3])] = []
+            devices["-".join(image.split('-')[1:-3])].append("-".join(image.split('.')[0].split('-')[-3:]))
+        except Exception as e:
+            print str(e)
+            print "unexpected filename format, ignoring"
+    shutil.copy('www/index.html.orig', 'www/index.html')
+    html_str = ""
+    for device in devices:
+        tmp_legend = legend % (device, 'foo')
+        prefix = 'static/img/maps/'
+        asn_path = 'map_ASN-'+device+'-'+devices[device][0]+'.pcap.jpg'
+        private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][0]+'.pcap.jpg'
+        src_path = 'map_Services-'+device+'-'+devices[device][0]+'.pcap.jpg'
+        dst_path = 'map_Client_Ports-'+device+'-'+devices[device][0]+'.pcap.jpg'
+        html_str += list_obj % (tmp_legend, prefix+asn_path, device, asn_path, prefix+asn_path, prefix+asn_path, prefix+private_path, device, private_path, prefix+private_path, prefix+private_path, prefix+src_path, device, src_path, prefix+src_path, prefix+src_path, prefix+dst_path, device, dst_path, prefix+dst_path, prefix+dst_path)
+    with open('www/index.html', 'r') as f:
+        filedata = f.read()
+    filedata = filedata.replace("<!--fill in-->", html_str)
+    with open('www/index.html', 'w') as f:
+        f.write(filedata)
+    return
+
+def build_images(pcaps, processed_pcaps):
+    for pcap_file in pcaps:
+        try:
+            asn_grid, private_grid, sport_grid, dport_grid = process_pcaps(pcap_file)
+            draw(asn_grid, "ASN-"+pcap_file.split("/")[-1])
+            draw(private_grid, "Private_RFC_1918-"+pcap_file.split("/")[-1], ROWS=289, COLUMNS=289, GRID_LINE=17)
+            draw(sport_grid, "Services-"+pcap_file.split("/")[-1])
+            draw(dport_grid, "Client_Ports-"+pcap_file.split("/")[-1])
+            processed_pcaps.append(pcap_file)
+        except Exception as e:
+            return processed_pcaps
+    return processed_pcaps
+
+def main():
+    signal.signal(signal.SIGINT, signal_handler)
+    pcaps = []
+    processed_pcaps = []
+    path = sys.argv[1]
+    if path.endswith('.pcap'):
+        pcaps.append(path)
+    else:
+        try:
+            pcaps = ast.literal_eval(path)
+        except:
+            for root, dirs, files in os.walk(path):
+                for file in files:
+                    if file.endswith(".pcap"):
+                        pcaps.append(os.path.join(root, file))
+
+    print "Found the following PCAP files:"
+    for pcap_file in pcaps:
+        print pcap_file
+    print
+
+    processed_pcaps = build_images(pcaps, processed_pcaps)
+    pcaps = list(set(pcaps)-set(processed_pcaps))
+    if pcaps:
+        print "FAILURE, remaining pcaps: "
+        print pcaps
+        print
+        print "Try again with the remaining PCAPs with this command:"
+        print
+        print 'python pcapplot.py "' + str(pcaps) + '"'
+        print
+        return
+
+    build_html()
+    print "Images are located in: 'www/static/img/maps'"
+
+    try:
+       call(["open", "www/index.html"])
+       print "Opening a browser window to display results...",
+    except:
+       import SimpleHTTPServer
+       import SocketServer
+
+       PORT = 8000
+       Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+       httpd = SocketServer.TCPServer(("", PORT), Handler)
+
+       print "Open a browser window to display results, serving at http://0.0.0.0:" + str(PORT)+"/www/index.html"
+       httpd.serve_forever()
+
+    print "done"
+    return
+
 if __name__ == "__main__":
-    asn_grid, private_grid, sport_grid, dport_grid = main()
-    draw(asn_grid, "ASN")
-    draw(private_grid, "Private RFC 1918", ROWS=289, COLUMNS=289, GRID_LINE=17)
-    draw(sport_grid, "Services")
-    draw(dport_grid, "Client Ports")
+    main()
