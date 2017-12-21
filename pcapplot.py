@@ -408,8 +408,9 @@ def build_html():
     # sort images per device
     dev_copy = copy.deepcopy(devices)
     for device in dev_copy:
-        devices[device] = sorted(dev_copy[device])
+        devices[device] = sorted(list(set(dev_copy[device])))
 
+    # create main page
     shutil.copy('www/index.html.orig', 'www/index.html')
     html_str = ""
 
@@ -420,7 +421,7 @@ def build_html():
             for line in f:
                 if line.startswith(capture):
                     host = line.split(": ")[1].strip()
-        tmp_legend = legend % (device, host)
+        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host)
         prefix = 'static/img/maps/'
         asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.jpg'
@@ -440,6 +441,39 @@ def build_html():
     filedata = filedata.replace("<!--fill in-->", html_str)
     with open('www/index.html', 'w') as f:
         f.write(filedata)
+
+    # create device pages
+    for device in devices:
+        shutil.copy('www/index.html.orig', 'www/'+device+'.html')
+        device_html_str = ""
+        for cap in devices[device]:
+            capture = device+'-'+cap+'.pcap'
+            host = ''
+            with open('www/static/img/maps/manifest.txt', 'r') as f:
+                for line in f:
+                    if line.startswith(capture):
+                        host = line.split(": ")[1].strip()
+            tmp_legend = legend % (device, host)
+            prefix = 'static/img/maps/'
+            asn_path = 'map_ASN-'+device+'-'+cap+'.pcap.jpg'
+            private_path = 'map_Private_RFC_1918-'+device+'-'+cap+'.pcap.jpg'
+            src_path = 'map_Source_Ports-'+device+'-'+cap+'.pcap.jpg'
+            dst_path = 'map_Destination_Ports-'+device+'-'+cap+'.pcap.jpg'
+
+            device_html_str += list_obj % (tmp_legend, prefix+asn_path, device,
+                                           capture, prefix+asn_path,
+                                           prefix+asn_path, prefix+private_path,
+                                           device, capture, prefix+private_path,
+                                           prefix+private_path, prefix+src_path,
+                                           device, capture, prefix+src_path,
+                                           prefix+src_path, prefix+dst_path,
+                                           device, capture, prefix+dst_path,
+                                           prefix+dst_path)
+        with open('www/'+device+'.html', 'r') as f:
+            filedata = f.read()
+        filedata = filedata.replace("<!--fill in-->", device_html_str)
+        with open('www/'+device+'.html', 'w') as f:
+            f.write(filedata)
     return
 
 def build_images(pcaps, processed_pcaps):
