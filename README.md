@@ -43,8 +43,8 @@ images it has created (note the volume for `www`, which lets you retain your
 images after the container exits).  It will also point you to the where the
 images are being served up and a link you can browse to see your results.  When
 you're finished you can `ctrl-c` to stop the container.  If you want to add
-more data to your visualization just run the container again with new pcaps and
-will add it to the visualization (note the same filename will overwrite any
+more data to your visualization just run the container again with new PCAPs and
+it will add it to the visualization (note the same filename will overwrite any
 pre-existing results with that filename).
 
 # FAQ
