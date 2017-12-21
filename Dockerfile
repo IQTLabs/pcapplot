@@ -30,4 +30,4 @@ WORKDIR /pcapplot
 
 EXPOSE 8000
 ENTRYPOINT ["python", "pcapplot.py"]
-CMD [""]
+CMD ["/pcaps"]
