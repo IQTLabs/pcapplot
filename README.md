@@ -7,6 +7,10 @@ PCAP files.  First they should have a naming scheme as follows:
 <device-label>-<YY>-<MM>-<DD>.pcap
 ```
 
+Secondly it assumes your PCAPs have been carved such that all packets in the
+capture revolve a particular IP address, naming the one the PCAP has as the
+device label in the filename.
+
 To get started, first ensure you have Docker and Git installed, then build the
 image for this tool as follows:
 
