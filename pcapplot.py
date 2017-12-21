@@ -182,22 +182,26 @@ def process_pcaps(pcap_file):
     ip_dports = {}
     with PcapReader(pcap_file) as packets:
         for packet in packets:
-            if (IP in packet) and (packet.proto in proto_dict.keys()):
-                proto_name = proto_dict[packet.proto]
-                l3 = packet['IP']
-                l4 = packet[proto_name]
-                if (l3.src != '0.0.0.0' and l3.src != '255.255.255.255' and
-                    l3.dst != '0.0.0.0' and l3.dst != '255.255.255.255'):
-                    if l3.src not in aggr_dict:
-                        aggr_dict[l3.src] = {}
-                    if l3.dst not in aggr_dict[l3.src]:
-                        aggr_dict[l3.src][l3.dst] = 0
-                    aggr_dict[l3.src][l3.dst] += len(packet.payload)
+            try:
+                if (IP in packet) and (packet.proto in proto_dict.keys()):
+                    proto_name = proto_dict[packet.proto]
+                    l3 = packet['IP']
+                    l4 = packet[proto_name]
+                    if (l3.src != '0.0.0.0' and l3.src != '255.255.255.255' and
+                        l3.dst != '0.0.0.0' and l3.dst != '255.255.255.255'):
+                        if l3.src not in aggr_dict:
+                            aggr_dict[l3.src] = {}
+                        if l3.dst not in aggr_dict[l3.src]:
+                            aggr_dict[l3.src][l3.dst] = 0
+                        aggr_dict[l3.src][l3.dst] += len(packet.payload)
 
-                    # get ports
-                    if l3.src not in ip_dports:
-                        ip_dports[l3.src] = []
-                    ip_dports[l3.src].append(l4.dport)
+                        # get ports
+                        if l3.src not in ip_dports:
+                            ip_dports[l3.src] = []
+                        ip_dports[l3.src].append(l4.dport)
+            except:
+                # packet failed to parse, skipping
+                pass
 
     print "done"
 
@@ -464,8 +468,8 @@ def main():
     print
 
     processed_pcaps = build_images(pcaps, processed_pcaps)
-    os.system('reset')
-    os.system('stty sane')
+    #os.system('reset')
+    #os.system('stty sane')
     pcaps = list(set(pcaps)-set(processed_pcaps))
     if pcaps:
         print "FAILURE, remaining pcaps: "
