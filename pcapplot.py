@@ -404,28 +404,36 @@ def build_html():
         except Exception as e:
             print str(e)
             print "unexpected filename format, ignoring"
-    shutil.copy('www/index.html.orig', 'www/index.html')
-    html_str = ""
 
     # sort images per device
     dev_copy = copy.deepcopy(devices)
     for device in dev_copy:
         devices[device] = sorted(dev_copy[device])
 
+    shutil.copy('www/index.html.orig', 'www/index.html')
+    html_str = ""
+
     for device in devices:
-        tmp_legend = legend % (device, 'foo')
+        capture = device+'-'+devices[device][-1]+'.pcap'
+        host = ''
+        with open('www/static/img/maps/manifest.txt', 'r') as f:
+            for line in f:
+                if line.startswith(capture):
+                    host = line.split(": ")[1].strip()
+        tmp_legend = legend % (device, host)
         prefix = 'static/img/maps/'
         asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         src_path = 'map_Source_Ports-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         dst_path = 'map_Destination_Ports-'+device+'-'+devices[device][-1]+'.pcap.jpg'
-        html_str += list_obj % (tmp_legend, prefix+asn_path, device, asn_path,
+
+        html_str += list_obj % (tmp_legend, prefix+asn_path, device, capture,
                                 prefix+asn_path, prefix+asn_path,
-                                prefix+private_path, device, private_path,
+                                prefix+private_path, device, capture,
                                 prefix+private_path, prefix+private_path,
-                                prefix+src_path, device, src_path,
+                                prefix+src_path, device, capture,
                                 prefix+src_path, prefix+src_path,
-                                prefix+dst_path, device, dst_path,
+                                prefix+dst_path, device, capture,
                                 prefix+dst_path, prefix+dst_path)
     with open('www/index.html', 'r') as f:
         filedata = f.read()
