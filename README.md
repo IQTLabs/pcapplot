@@ -47,6 +47,16 @@ more data to your visualization just run the container again with new PCAPs and
 it will add it to the visualization (note the same filename will overwrite any
 pre-existing results with that filename).
 
+You can also run the tool for viewing without adding additional data by using
+the following:
+
+```
+docker run -it -p 8000:8000 \
+           -v $(pwd)/www:/pcapplot/www \
+           pcapplot \
+           []
+```
+
 # FAQ
 
 If you see flashing in your terminal and error messages that start with this:

@@ -30,6 +30,7 @@
   </script>
 </head>
 <body>
+<p align="right"><font color="yellow"><a href="/www/index.html" style="color:yellow">Home</a></font></p>
 <p><font color="white">Showing maps for the latest capture of each device type, click on a device name to see all maps for that device type. Click and drag rows to reorder them.</font></p>
 <ul id="sortable">
 <!--fill in-->
