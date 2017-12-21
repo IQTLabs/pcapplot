@@ -416,10 +416,17 @@ def build_html():
         tmp_legend = legend % (device, 'foo')
         prefix = 'static/img/maps/'
         asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.jpg'
-        private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][0]+'.pcap.jpg'
+        private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         src_path = 'map_Source_Ports-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         dst_path = 'map_Destination_Ports-'+device+'-'+devices[device][-1]+'.pcap.jpg'
-        html_str += list_obj % (tmp_legend, prefix+asn_path, device, asn_path, prefix+asn_path, prefix+asn_path, prefix+private_path, device, private_path, prefix+private_path, prefix+private_path, prefix+src_path, device, src_path, prefix+src_path, prefix+src_path, prefix+dst_path, device, dst_path, prefix+dst_path, prefix+dst_path)
+        html_str += list_obj % (tmp_legend, prefix+asn_path, device, asn_path,
+                                prefix+asn_path, prefix+asn_path,
+                                prefix+private_path, device, private_path,
+                                prefix+private_path, prefix+private_path,
+                                prefix+src_path, device, src_path,
+                                prefix+src_path, prefix+src_path,
+                                prefix+dst_path, device, dst_path,
+                                prefix+dst_path, prefix+dst_path)
     with open('www/index.html', 'r') as f:
         filedata = f.read()
     filedata = filedata.replace("<!--fill in-->", html_str)
