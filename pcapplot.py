@@ -426,10 +426,14 @@ def build_images(pcaps, processed_pcaps):
             asn_grid, private_grid, sport_grid, dport_grid = process_pcaps(pcap_file)
             draw(asn_grid, "ASN-"+pcap_file.split("/")[-1])
             draw(private_grid, "Private_RFC_1918-"+pcap_file.split("/")[-1], ROWS=289, COLUMNS=289, GRID_LINE=17)
-            draw(sport_grid, "Services-"+pcap_file.split("/")[-1])
-            draw(dport_grid, "Client_Ports-"+pcap_file.split("/")[-1])
+            draw(sport_grid, "Source_Ports-"+pcap_file.split("/")[-1])
+            draw(dport_grid, "Destination_Ports-"+pcap_file.split("/")[-1])
             processed_pcaps.append(pcap_file)
         except Exception as e:
+            print str(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             return processed_pcaps
     return processed_pcaps
 
@@ -455,6 +459,8 @@ def main():
     print
 
     processed_pcaps = build_images(pcaps, processed_pcaps)
+    os.system('reset')
+    os.system('stty sane')
     pcaps = list(set(pcaps)-set(processed_pcaps))
     if pcaps:
         print "FAILURE, remaining pcaps: "
