@@ -1,6 +1,3 @@
-import os
-import sys
-
 from pygame import display as pygdisplay
 from pygame import draw as pygdraw
 from pygame import font as pygfont
