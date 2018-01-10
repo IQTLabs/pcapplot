@@ -1,4 +1,10 @@
-import pygame
+from pygame import display as pygdisplay
+from pygame import draw as pygdraw
+from pygame import font as pygfont
+from pygame import image as pygimage
+from pygame import init as pyginit
+from pygame import quit as pygquit
+from pygame import Rect as pygRect
 
 def interpolate_tuple(startcolor, goalcolor, steps):
     """
@@ -50,14 +56,14 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
         for column in range(COLUMNS/GRID_LINE):
             subgrid[row].append(0)
 
-    pygame.init()
+    pygfont.init()
 
-    myfont = pygame.font.SysFont('Times New Roman', 9)
+    myfont = pygfont.SysFont('Times New Roman', 9)
     download=myfont.render('D', True, WHITE)
     upload=myfont.render('U', True, WHITE)
     bidirectional=myfont.render('B', True, WHITE)
-    screen = pygame.display.set_mode(WINDOW_SIZE)
-    pygame.display.set_caption(grid_type + " Plot")
+    screen = pygdisplay.set_mode(WINDOW_SIZE)
+    pygdisplay.set_caption(grid_type + " Plot")
     screen.fill(WHITE)
 
     # check which grids should be drawn
@@ -70,13 +76,13 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
     for row in range(ROWS/GRID_LINE):
         for column in range(COLUMNS/GRID_LINE):
             if subgrid[row][column] == 1:
-                pygame.draw.rect(screen,
+                pygdraw.rect(screen,
                                  BLACK,
                                  [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN-1,
                                   (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN-1,
                                   (WIDTH*18)+MARGIN-2,
                                   (HEIGHT*18)+MARGIN-2])
-                pygame.draw.rect(screen,
+                pygdraw.rect(screen,
                                  BLACK,
                                  [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN,
                                   (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN,
@@ -93,7 +99,7 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
                 color = (255, 0, 255)
             elif grid[row][column] == 3:
                 color = (0, 255, 255)
-            cell = pygame.draw.rect(screen,
+            cell = pygdraw.rect(screen,
                                     color,
                                     [(MARGIN + WIDTH) * column + MARGIN,
                                      (MARGIN + HEIGHT) * row + MARGIN,
@@ -106,12 +112,11 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
             if grid[row][column] == 3:
                 screen.blit(bidirectional, cell)
 
-    pygame.display.flip()
-
-    rect = pygame.Rect(0, 0, W_HEIGHT, W_WIDTH)
+    pygdisplay.flip()
+    rect = pygRect(0, 0, W_HEIGHT, W_WIDTH)
     sub = screen.subsurface(rect)
-    pygame.image.save(sub, "www/static/img/maps/map_" + "_".join(grid_type.split()) + ".jpg")
-    pygame.quit()
+    pygimage.save(sub, "www/static/img/maps/map_" + "_".join(grid_type.split()) + ".jpg")
+    pygquit()
 
 if __name__ == "__main__":
     print interpolate_tuple((0,255,255), (255,0,0), 100)

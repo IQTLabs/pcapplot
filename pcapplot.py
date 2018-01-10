@@ -315,28 +315,28 @@ def build_html():
          data-width="2561"
          data-height="2561"
          data-caption="&lt;b&gt;%s ASN&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350">
+         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
       </a>
       <a data-fancybox="gallery"
          data-srcset="%s"
          data-width="2891"
          data-height="2891"
          data-caption="&lt;b&gt;%s Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350">
+         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
       </a>
       <a data-fancybox="gallery"
          data-srcset="%s"
          data-width="2561"
          data-height="2561"
          data-caption="&lt;b&gt;%s Source Ports&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350">
+         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
       </a>
       <a data-fancybox="gallery"
          data-srcset="%s"
          data-width="2561"
          data-height="2561"
          data-caption="&lt;b&gt;%s Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350">
+         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
       </a>
       </div>
       </div>
