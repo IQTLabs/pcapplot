@@ -62,7 +62,7 @@ docker run -it -p 8000:8000 \
 ```
 
 If you prefer to just save the images you can add `-s` to the end of the docker
-command it and will just save the image instead of serving up the html files.
+command and it will just save the image instead of serving up the html files.
 
 # FAQ
 
