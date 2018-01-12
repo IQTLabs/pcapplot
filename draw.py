@@ -94,9 +94,9 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
         for column in range(COLUMNS):
             color = WHITE
             if grid[row][column] == 1:
-                color = (255, 0, 255)
+                color = RED
             elif grid[row][column] == 2:
-                color = (255, 0, 255)
+                color = BLUE
             elif grid[row][column] == 3:
                 color = (0, 255, 255)
             cell = pygdraw.rect(screen,
