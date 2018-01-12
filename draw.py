@@ -76,14 +76,15 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
     for row in range(ROWS/GRID_LINE):
         for column in range(COLUMNS/GRID_LINE):
             if subgrid[row][column] == 1:
+                COLOR = BLACK
                 pygdraw.rect(screen,
-                                 BLACK,
+                                 COLOR,
                                  [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN-1,
                                   (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN-1,
                                   (WIDTH*18)+MARGIN-2,
                                   (HEIGHT*18)+MARGIN-2])
                 pygdraw.rect(screen,
-                                 BLACK,
+                                 COLOR,
                                  [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN,
                                   (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN,
                                   (WIDTH*18)+MARGIN-4,

@@ -1,4 +1,5 @@
 from cymruwhois import Client
+from datetime import datetime
 from scapy.utils import PcapReader
 from scapy.layers.inet import IP
 from subprocess import call
@@ -180,10 +181,18 @@ def process_pcaps(pcap_file):
 
     proto_dict = {17:'UDP', 6:'TCP'}
     ip_dports = {}
+    packet_count = 0
+    start_time = None
+    end_time = None
     with PcapReader(pcap_file) as packets:
         for packet in packets:
             try:
                 if (IP in packet) and (packet.proto in proto_dict.keys()):
+                    if packet_count == 0:
+                        start_time = packet.time
+                    else:
+                        end_time = packet.time
+                    packet_count += 1
                     proto_name = proto_dict[packet.proto]
                     l3 = packet['IP']
                     l4 = packet[proto_name]
@@ -302,9 +311,9 @@ def process_pcaps(pcap_file):
                 print "total bytes received:", asn_dict[asn]['bytes_in']
         except:
            pass
-    return asn_grid, private_grid, sport_grid, dport_grid
+    return asn_grid, private_grid, sport_grid, dport_grid, packet_count, datetime.utcfromtimestamp(end_time) - datetime.utcfromtimestamp(start_time)
 
-def build_html():
+def build_html(pcap_stats):
     list_obj = """
   <li class="ui-state-default">
       <div id="wrapper">
@@ -342,7 +351,7 @@ def build_html():
       </div>
   </li>
 """
-    legend = """%s<br />Host: %s<br />Filename: %s<br /><br />Left to right:<br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports"""
+    legend = """<b>%s</b><br /><b>Host:</b> %s<br /><b>Filename:</b> %s<br /><b>Packets:</b> %s<br /><b>Time window:</b> %s<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports"""
     image_paths = []
     for root, dirs, files in os.walk('www/static/img/maps'):
         for file in files:
@@ -377,7 +386,7 @@ def build_html():
             for line in f:
                 if line.startswith(capture):
                     host = line.split(": ")[1].strip()
-        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host, capture)
+        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host, capture, pcap_stats[capture][0], pcap_stats[capture][1])
         prefix = 'static/img/maps/'
         asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.jpg'
@@ -409,7 +418,7 @@ def build_html():
                 for line in f:
                     if line.startswith(capture):
                         host = line.split(": ")[1].strip()
-            tmp_legend = legend % (device, host, capture)
+            tmp_legend = legend % (device, host, capture, pcap_stats[capture][0], pcap_stats[capture][1])
             prefix = 'static/img/maps/'
             asn_path = 'map_ASN-'+device+'-'+cap+'.pcap.jpg'
             private_path = 'map_Private_RFC_1918-'+device+'-'+cap+'.pcap.jpg'
@@ -432,27 +441,29 @@ def build_html():
             f.write(filedata)
     return
 
-def build_images(pcaps, processed_pcaps):
+def build_images(pcaps, processed_pcaps, pcap_stats):
     for pcap_file in pcaps:
         try:
-            asn_grid, private_grid, sport_grid, dport_grid = process_pcaps(pcap_file)
+            asn_grid, private_grid, sport_grid, dport_grid, packet_count, time_delta = process_pcaps(pcap_file)
             draw(asn_grid, "ASN-"+pcap_file.split("/")[-1])
             draw(private_grid, "Private_RFC_1918-"+pcap_file.split("/")[-1], ROWS=289, COLUMNS=289, GRID_LINE=17)
             draw(sport_grid, "Source_Ports-"+pcap_file.split("/")[-1])
             draw(dport_grid, "Destination_Ports-"+pcap_file.split("/")[-1])
             processed_pcaps.append(pcap_file)
+            pcap_stats[pcap_file.split("/")[-1]] = (packet_count, str(time_delta))
         except Exception as e:
             print str(e)
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
             return processed_pcaps
-    return processed_pcaps
+    return processed_pcaps, pcap_stats
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
     pcaps = []
     processed_pcaps = []
+    pcap_stats = {}
     path = sys.argv[1]
     if path.endswith('.pcap'):
         pcaps.append(path)
@@ -470,7 +481,7 @@ def main():
         print pcap_file
     print
 
-    processed_pcaps = build_images(pcaps, processed_pcaps)
+    processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats)
     #os.system('reset')
     #os.system('stty sane')
     pcaps = list(set(pcaps)-set(processed_pcaps))
@@ -484,7 +495,7 @@ def main():
         print
         return
 
-    build_html()
+    build_html(pcap_stats)
     print "Images are located in: 'www/static/img/maps'"
 
     try:
