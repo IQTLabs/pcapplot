@@ -69,6 +69,7 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
     # check which grids should be drawn
     for row in range(ROWS):
         for column in range(COLUMNS):
+            # TODO keep count of 1, 2, and 3, make a color decision by most frequent
             if grid[row][column] != 0:
                 subgrid[row / GRID_LINE][column / GRID_LINE] = 1
 
@@ -99,7 +100,7 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
             elif grid[row][column] == 2:
                 color = BLUE
             elif grid[row][column] == 3:
-                color = (0, 255, 255)
+                color = GREEN
             cell = pygdraw.rect(screen,
                                     color,
                                     [(MARGIN + WIDTH) * column + MARGIN,

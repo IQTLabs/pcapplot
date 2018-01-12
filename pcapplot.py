@@ -464,7 +464,10 @@ def main():
     pcaps = []
     processed_pcaps = []
     pcap_stats = {}
-    path = sys.argv[1]
+    if sys.argv[1] == '-s':
+        path = "/pcaps"
+    else:
+        path = sys.argv[1]
     if path.endswith('.pcap'):
         pcaps.append(path)
     else:
@@ -495,24 +498,25 @@ def main():
         print
         return
 
-    build_html(pcap_stats)
+    if sys.argv[-1] != '-s':
+        build_html(pcap_stats)
+
+        try:
+            call(["open", "www/index.html"])
+            print "Opening a browser window to display results...",
+        except:
+            import SimpleHTTPServer
+            import SocketServer
+
+            PORT = 8000
+            Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+            httpd = SocketServer.TCPServer(("", PORT), Handler)
+
+            print "Open a browser window to display results, serving at http://0.0.0.0:" + str(PORT)+"/www/index.html"
+            httpd.serve_forever()
+
     print "Images are located in: 'www/static/img/maps'"
 
-    try:
-       call(["open", "www/index.html"])
-       print "Opening a browser window to display results...",
-    except:
-       import SimpleHTTPServer
-       import SocketServer
-
-       PORT = 8000
-       Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-       httpd = SocketServer.TCPServer(("", PORT), Handler)
-
-       print "Open a browser window to display results, serving at http://0.0.0.0:" + str(PORT)+"/www/index.html"
-       httpd.serve_forever()
-
-    print "done"
     return
 
 if __name__ == "__main__":
