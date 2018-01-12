@@ -342,7 +342,7 @@ def build_html():
       </div>
   </li>
 """
-    legend = """%s<br />Host: %s<br /><br />Left to right:<br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports"""
+    legend = """%s<br />Host: %s<br />Filename: %s<br /><br />Left to right:<br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports"""
     image_paths = []
     for root, dirs, files in os.walk('www/static/img/maps'):
         for file in files:
@@ -351,9 +351,12 @@ def build_html():
     devices = {}
     for image in image_paths:
         try:
-            if "-".join(image.split('-')[1:-3]) not in devices:
-                devices["-".join(image.split('-')[1:-3])] = []
-            devices["-".join(image.split('-')[1:-3])].append("-".join(image.split('.')[0].split('-')[-3:]))
+            if "-".join(image.split('-')[1:-3]) != '':
+                if "-".join(image.split('-')[1:-3]) not in devices:
+                    devices["-".join(image.split('-')[1:-3])] = []
+                devices["-".join(image.split('-')[1:-3])].append("-".join(image.split('.')[0].split('-')[-3:]))
+            else:
+                print "unexpected filename format, ignoring"
         except Exception as e:
             print str(e)
             print "unexpected filename format, ignoring"
@@ -374,7 +377,7 @@ def build_html():
             for line in f:
                 if line.startswith(capture):
                     host = line.split(": ")[1].strip()
-        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host)
+        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host, capture)
         prefix = 'static/img/maps/'
         asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.jpg'
         private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.jpg'
@@ -406,7 +409,7 @@ def build_html():
                 for line in f:
                     if line.startswith(capture):
                         host = line.split(": ")[1].strip()
-            tmp_legend = legend % (device, host)
+            tmp_legend = legend % (device, host, capture)
             prefix = 'static/img/maps/'
             asn_path = 'map_ASN-'+device+'-'+cap+'.pcap.jpg'
             private_path = 'map_Private_RFC_1918-'+device+'-'+cap+'.pcap.jpg'
