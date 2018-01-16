@@ -482,7 +482,8 @@ def main():
                     if file.endswith(".pcap"):
                         pcaps.append(os.path.join(root, file))
 
-    print "Found the following PCAP files:"
+    if pcaps:
+        print "Found the following PCAP files:"
     for pcap_file in pcaps:
         print pcap_file
     print
@@ -502,7 +503,8 @@ def main():
         return
 
     if sys.argv[-1] != '-s':
-        build_html(pcap_stats)
+        if sys.argv[1] != '[]':
+            build_html(pcap_stats)
 
         try:
             call(["open", "www/index.html"])
