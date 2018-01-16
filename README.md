@@ -39,7 +39,7 @@ docker run -it -p 8000:8000 \
            -v ~/my_local_pcaps:/pcaps \
            -v $(pwd)/www:/pcapplot/www \
            pcapplot \
-           /pcaps/iphone-16-09-23.pcap
+           iphone-16-09-23.pcap
 ```
 
 Once the tool is finished processing, it will point you to the location of the
