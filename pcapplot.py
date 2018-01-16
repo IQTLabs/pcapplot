@@ -467,7 +467,10 @@ def main():
     if sys.argv[1] == '-s':
         path = "/pcaps"
     else:
-        path = sys.argv[1]
+        if sys.argv[1] != '[]' and not sys.argv[1].startswith("/pcaps"):
+            path = "/pcaps/"+sys.argv[1]
+        else:
+            path = sys.argv[1]
     if path.endswith('.pcap'):
         pcaps.append(path)
     else:
