@@ -10,7 +10,7 @@
   <style>
   body {
    background-image: url("static/img/grey.png");
-   background-color: #cccccc;
+   background-color: #636363;
   }
   #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
   #sortable li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; height: 1.5em; }

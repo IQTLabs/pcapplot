@@ -29,5 +29,6 @@ COPY . /pcapplot
 WORKDIR /pcapplot
 
 EXPOSE 8000
+ENV PYTHONUNBUFFERED 0
 ENTRYPOINT ["python", "pcapplot.py"]
 CMD ["/pcaps"]
