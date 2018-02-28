@@ -6,6 +6,7 @@ from subprocess import call
 
 import ast
 import copy
+import humanize
 import os
 import shutil
 import signal
@@ -221,7 +222,7 @@ def process_pcaps(pcap_file):
     for row in range(ROWS):
         private_grid.append([])
         for column in range(COLUMNS):
-            private_grid[row].append(0)
+            private_grid[row].append([0, 0])
 
     private_map = populate_1918_space()
 
@@ -246,7 +247,7 @@ def process_pcaps(pcap_file):
                             # RFC 1918, etc.
                             #print "peer:", peer, "bytes out :", aggr_dict[host][peer]
                             priv_arr = private_map[".".join(peer.split(".")[:-1])]
-                            private_grid[priv_arr[0]][priv_arr[1]] = 1
+                            private_grid[priv_arr[0]][priv_arr[1]][1] += aggr_dict[host][peer]
                         else:
                             print "found public IP without an ASN:", peer, "bytes out :", aggr_dict[host][peer]
                     else:
@@ -274,7 +275,7 @@ def process_pcaps(pcap_file):
                         # RFC 1918, etc.
                         #print "peer:", host, "bytes in:", aggr_dict[host][dst]
                         priv_arr = private_map[".".join(host.split(".")[:-1])]
-                        private_grid[priv_arr[0]][priv_arr[1]] = 2
+                        private_grid[priv_arr[0]][priv_arr[1]][0] += aggr_dict[host][dst]
                     else:
                         print "found public IP without an ASN:", host, "bytes out :", aggr_dict[host][dst]
                 else:
@@ -291,27 +292,22 @@ def process_pcaps(pcap_file):
     for row in range(ROWS):
         asn_grid.append([])
         for column in range(COLUMNS):
-            asn_grid[row].append(0)
+            asn_grid[row].append([0, 0])
 
     for asn in asn_dict:
         try:
             asn_num = int(asn)
             if asn_num < 65536:
-                if asn_dict[asn]['bytes_out'] > asn_dict[asn]['bytes_in']:
-                    asn_grid[asn_num/ROWS][asn_num%ROWS] = 1
-                elif asn_dict[asn]['bytes_out'] < asn_dict[asn]['bytes_in']:
-                    asn_grid[asn_num/ROWS][asn_num%ROWS] = 2
-                else:
-                    asn_grid[asn_num/ROWS][asn_num%ROWS] = 3
+                asn_grid[asn_num/ROWS][asn_num%ROWS] = [asn_dict[asn]['bytes_in'], asn_dict[asn]['bytes_out']]
             else:
                 print "ALERT!!!! high",
                 print "external asn:", asn,
                 print "asn owner:", asn_dict[asn]['owner'],
                 print "total bytes sent:", asn_dict[asn]['bytes_out'],
                 print "total bytes received:", asn_dict[asn]['bytes_in']
-        except:
-           pass
-    return asn_grid, private_grid, sport_grid, dport_grid, packet_count, datetime.utcfromtimestamp(end_time) - datetime.utcfromtimestamp(start_time)
+        except Exception as e:
+           print str(e)
+    return asn_grid, private_grid, sport_grid, dport_grid, packet_count, humanize.naturaldelta(datetime.utcfromtimestamp(end_time) - datetime.utcfromtimestamp(start_time))
 
 def build_html(pcap_stats):
     list_obj = """
@@ -324,28 +320,28 @@ def build_html(pcap_stats):
          data-width="2561"
          data-height="2561"
          data-caption="&lt;b&gt;%s ASN&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
+         href="%s"><img src="%s" alt="" height="350" width="350">
       </a>
       <a data-fancybox="gallery"
          data-srcset="%s"
          data-width="2891"
          data-height="2891"
          data-caption="&lt;b&gt;%s Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
+         href="%s"><img src="%s" alt="" height="350" width="350">
       </a>
       <a data-fancybox="gallery"
          data-srcset="%s"
          data-width="2561"
          data-height="2561"
          data-caption="&lt;b&gt;%s Source Ports&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
+         href="%s"><img src="%s" alt="" height="350" width="350">
       </a>
       <a data-fancybox="gallery"
          data-srcset="%s"
          data-width="2561"
          data-height="2561"
          data-caption="&lt;b&gt;%s Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: %s"
-         href="%s"><img src="%s" alt="" height="350" width="350" border="2">
+         href="%s"><img src="%s" alt="" height="350" width="350">
       </a>
       </div>
       </div>

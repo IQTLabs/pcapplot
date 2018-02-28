@@ -6,6 +6,9 @@ from pygame import init as pyginit
 from pygame import quit as pygquit
 from pygame import Rect as pygRect
 
+import copy
+
+
 def interpolate_tuple(startcolor, goalcolor, steps):
     """
     Take two RGB color sets and mix them over a specified number of steps.
@@ -44,7 +47,6 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
 
     WIDTH = 9
     HEIGHT = 9
-    GRID_LINE = 16
     MARGIN = 1
     W_HEIGHT = (ROWS*10)+1
     W_WIDTH = (COLUMNS*10)+1
@@ -67,29 +69,75 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
     screen.fill(WHITE)
 
     # check which grids should be drawn
-    for row in range(ROWS):
-        for column in range(COLUMNS):
-            # TODO keep count of 1, 2, and 3, make a color decision by most frequent
-            if grid[row][column] != 0:
-                subgrid[row / GRID_LINE][column / GRID_LINE] = 1
+    new_grid = copy.deepcopy(grid)
+    if grid_type.startswith('ASN-') or grid_type.startswith('Private_RFC_1918-'):
+        for r in range(ROWS/GRID_LINE):
+            for c in range(COLUMNS/GRID_LINE):
+                box_in = 0
+                box_out = 0
+                for row in range(ROWS/GRID_LINE):
+                    for column in range(COLUMNS/GRID_LINE):
+                        y = (r*(ROWS/GRID_LINE))+row
+                        x = (c*(COLUMNS/GRID_LINE))+column
+                        box_in += new_grid[y][x][0]
+                        box_out += new_grid[y][x][1]
+                        if new_grid[y][x][0]+new_grid[y][x][1] == 0:
+                            grid[y][x] = 0
+                        else:
+                            in_percent = new_grid[y][x][0]/(float(new_grid[y][x][0]+new_grid[y][x][1]))
+                            if in_percent < 0.45:
+                                grid[y][x] = 2
+                            elif in_percent > 0.55:
+                                grid[y][x] = 1
+                            else:
+                                grid[y][x] = 3
+                if box_in+box_out > 0:
+                    in_percent = box_in/(float(box_in+box_out))
+                    if in_percent < 0.45:
+                        subgrid[r][c] = 2
+                    elif in_percent > 0.55:
+                        subgrid[r][c] = 1
+                    else:
+                        subgrid[r][c] = 3
+    else:
+        for row in range(ROWS):
+            for column in range(COLUMNS):
+                if new_grid[row][column] != 0:
+                    if grid_type.startswith('Source_Ports-'):
+                        subgrid[row / GRID_LINE][column / GRID_LINE] = 2
+                    elif grid_type.startswith('Destination_Ports-'):
+                        subgrid[row / GRID_LINE][column / GRID_LINE] = 1
 
     # draw grid
     for row in range(ROWS/GRID_LINE):
         for column in range(COLUMNS/GRID_LINE):
-            if subgrid[row][column] == 1:
-                COLOR = BLACK
-                pygdraw.rect(screen,
+            if subgrid[row][column] > 0:
+                # outbound is red
+                if subgrid[row][column] == 1:
+                    COLOR = RED
+                # inbound is blue
+                elif subgrid[row][column] == 2:
+                    COLOR = BLUE
+                # between 45-55% equal is green
+                elif subgrid[row][column] == 3:
+                    COLOR = GREEN
+                # this case should never happen
+                else:
+                    COLOR = BLACK
+                if ROWS/GRID_LINE == 17:
+                    pygdraw.rect(screen,
                                  COLOR,
                                  [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN-1,
-                                  (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN-1,
-                                  (WIDTH*18)+MARGIN-2,
-                                  (HEIGHT*18)+MARGIN-2])
-                pygdraw.rect(screen,
+                                 (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN-1,
+                                 (WIDTH*19)+MARGIN,
+                                 (HEIGHT*19)+MARGIN])
+                else:
+                    pygdraw.rect(screen,
                                  COLOR,
-                                 [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN,
-                                  (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN,
-                                  (WIDTH*18)+MARGIN-4,
-                                  (HEIGHT*18)+MARGIN-4])
+                                 [(MARGIN + WIDTH) * column * GRID_LINE + MARGIN-1,
+                                 (MARGIN + HEIGHT) * row * GRID_LINE + MARGIN-1,
+                                 (WIDTH*18)+MARGIN-2,
+                                 (HEIGHT*18)+MARGIN-2])
 
     # draw cells
     for row in range(ROWS):
