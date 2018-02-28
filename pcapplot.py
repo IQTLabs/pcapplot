@@ -311,7 +311,7 @@ def process_pcaps(pcap_file):
 
 def build_html(pcap_stats):
     list_obj = """
-  <li class="ui-state-default">
+  <li class="ui-state-default" style="background-color: #999999">
       <div id="wrapper">
       <div id="first"><p>%s</p></div>
       <div id="second">
