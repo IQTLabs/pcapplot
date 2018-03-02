@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PCAP Plot</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <link rel="stylesheet" href="static/css/jquery.fancybox.min.css">
+  <style>
+  body {
+   background-image: url("static/img/grey.png");
+   background-color: #636363;
+  }
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+  #sortable li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; height: 1.5em; }
+  html>body #sortable li { height: 352px; line-height: 1.2em; }
+  .ui-state-highlight { height: 352px; line-height: 1.2em; }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="static/js/jquery.fancybox.min.js"></script>
+  <script>
+  $( function() {
+    $( "#sortable" ).sortable({
+      placeholder: "ui-state-highlight"
+    });
+    $( "#sortable" ).disableSelection();
+  } );
+  </script>
+</head>
+<body>
+<p align="right"><font color="yellow"><a href="index.html" style="color:yellow">Home</a></font></p>
+<p><font color="white">Showing maps for the latest capture of each device type, click on a device name to see all maps for that device type. Click and drag rows to reorder them.</font></p>
+<p><font color="white">Maps are laid out left to right, top to bottom.  ASN is 1-65536, RFC 1918 is 10.0.0.0/8 followed by 172.16.0.0/12 followed by 192.168.0.0/16 (each square is a /24), Source and Destination Ports are 1-65536.</font></p>
+<p><font color="white">Blue is inbound traffic, Red is outbound traffic, Green is mostly bidirectional traffic.</font></p>
+<ul id="sortable">
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="windows-laptop.html" style="color:blue">windows-laptop</a></b><br /><b>Host:</b> 192.168.1.208<br /><b>Filename:</b> windows-laptop-16-10-12.pcap<br /><b>Packets:</b> 3069526<br /><b>Time window:</b> an hour<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop ASN&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_ASN-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_ASN-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;windows-laptop Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Source Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_Source_Ports-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_Source_Ports-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_Destination_Ports-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="samsung-tablet.html" style="color:blue">samsung-tablet</a></b><br /><b>Host:</b> 192.168.1.239<br /><b>Filename:</b> samsung-tablet-16-10-12.pcap<br /><b>Packets:</b> 20613<br /><b>Time window:</b> 14 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-samsung-tablet-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;samsung-tablet ASN&lt;/b&gt;&lt;br /&gt; Capture: samsung-tablet-16-10-12.pcap"
+         href="static/img/maps/map_ASN-samsung-tablet-16-10-12.pcap.jpg"><img src="static/img/maps/map_ASN-samsung-tablet-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-samsung-tablet-16-10-12.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;samsung-tablet Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: samsung-tablet-16-10-12.pcap"
+         href="static/img/maps/map_Private_RFC_1918-samsung-tablet-16-10-12.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-samsung-tablet-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-samsung-tablet-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;samsung-tablet Source Ports&lt;/b&gt;&lt;br /&gt; Capture: samsung-tablet-16-10-12.pcap"
+         href="static/img/maps/map_Source_Ports-samsung-tablet-16-10-12.pcap.jpg"><img src="static/img/maps/map_Source_Ports-samsung-tablet-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-samsung-tablet-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;samsung-tablet Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: samsung-tablet-16-10-12.pcap"
+         href="static/img/maps/map_Destination_Ports-samsung-tablet-16-10-12.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-samsung-tablet-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="echo.html" style="color:blue">echo</a></b><br /><b>Host:</b> 192.168.1.240<br /><b>Filename:</b> echo-16-10-12.pcap<br /><b>Packets:</b> 22273<br /><b>Time window:</b> 14 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-echo-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;echo ASN&lt;/b&gt;&lt;br /&gt; Capture: echo-16-10-12.pcap"
+         href="static/img/maps/map_ASN-echo-16-10-12.pcap.jpg"><img src="static/img/maps/map_ASN-echo-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-echo-16-10-12.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;echo Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: echo-16-10-12.pcap"
+         href="static/img/maps/map_Private_RFC_1918-echo-16-10-12.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-echo-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-echo-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;echo Source Ports&lt;/b&gt;&lt;br /&gt; Capture: echo-16-10-12.pcap"
+         href="static/img/maps/map_Source_Ports-echo-16-10-12.pcap.jpg"><img src="static/img/maps/map_Source_Ports-echo-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-echo-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;echo Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: echo-16-10-12.pcap"
+         href="static/img/maps/map_Destination_Ports-echo-16-10-12.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-echo-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="printer.html" style="color:blue">printer</a></b><br /><b>Host:</b> 192.168.1.236<br /><b>Filename:</b> printer-16-09-28.pcap<br /><b>Packets:</b> 2573<br /><b>Time window:</b> 23 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-printer-16-09-28.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;printer ASN&lt;/b&gt;&lt;br /&gt; Capture: printer-16-09-28.pcap"
+         href="static/img/maps/map_ASN-printer-16-09-28.pcap.jpg"><img src="static/img/maps/map_ASN-printer-16-09-28.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-printer-16-09-28.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;printer Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: printer-16-09-28.pcap"
+         href="static/img/maps/map_Private_RFC_1918-printer-16-09-28.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-printer-16-09-28.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-printer-16-09-28.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;printer Source Ports&lt;/b&gt;&lt;br /&gt; Capture: printer-16-09-28.pcap"
+         href="static/img/maps/map_Source_Ports-printer-16-09-28.pcap.jpg"><img src="static/img/maps/map_Source_Ports-printer-16-09-28.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-printer-16-09-28.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;printer Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: printer-16-09-28.pcap"
+         href="static/img/maps/map_Destination_Ports-printer-16-09-28.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-printer-16-09-28.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="iphone.html" style="color:blue">iphone</a></b><br /><b>Host:</b> 192.168.1.228<br /><b>Filename:</b> iphone-16-10-04.pcap<br /><b>Packets:</b> 473<br /><b>Time window:</b> 23 minutes<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-iphone-16-10-04.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;iphone ASN&lt;/b&gt;&lt;br /&gt; Capture: iphone-16-10-04.pcap"
+         href="static/img/maps/map_ASN-iphone-16-10-04.pcap.jpg"><img src="static/img/maps/map_ASN-iphone-16-10-04.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-iphone-16-10-04.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;iphone Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: iphone-16-10-04.pcap"
+         href="static/img/maps/map_Private_RFC_1918-iphone-16-10-04.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-iphone-16-10-04.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-iphone-16-10-04.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;iphone Source Ports&lt;/b&gt;&lt;br /&gt; Capture: iphone-16-10-04.pcap"
+         href="static/img/maps/map_Source_Ports-iphone-16-10-04.pcap.jpg"><img src="static/img/maps/map_Source_Ports-iphone-16-10-04.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-iphone-16-10-04.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;iphone Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: iphone-16-10-04.pcap"
+         href="static/img/maps/map_Destination_Ports-iphone-16-10-04.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-iphone-16-10-04.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="android-1.html" style="color:blue">android-1</a></b><br /><b>Host:</b> 192.168.1.180<br /><b>Filename:</b> android-1-16-10-07.pcap<br /><b>Packets:</b> 5450<br /><b>Time window:</b> 2 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-android-1-16-10-07.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;android-1 ASN&lt;/b&gt;&lt;br /&gt; Capture: android-1-16-10-07.pcap"
+         href="static/img/maps/map_ASN-android-1-16-10-07.pcap.jpg"><img src="static/img/maps/map_ASN-android-1-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-android-1-16-10-07.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;android-1 Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: android-1-16-10-07.pcap"
+         href="static/img/maps/map_Private_RFC_1918-android-1-16-10-07.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-android-1-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-android-1-16-10-07.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;android-1 Source Ports&lt;/b&gt;&lt;br /&gt; Capture: android-1-16-10-07.pcap"
+         href="static/img/maps/map_Source_Ports-android-1-16-10-07.pcap.jpg"><img src="static/img/maps/map_Source_Ports-android-1-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-android-1-16-10-07.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;android-1 Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: android-1-16-10-07.pcap"
+         href="static/img/maps/map_Destination_Ports-android-1-16-10-07.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-android-1-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="nestsmoke.html" style="color:blue">nestsmoke</a></b><br /><b>Host:</b> 192.168.1.168<br /><b>Filename:</b> nestsmoke-16-10-11.pcap<br /><b>Packets:</b> 183<br /><b>Time window:</b> 27 seconds<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-nestsmoke-16-10-11.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;nestsmoke ASN&lt;/b&gt;&lt;br /&gt; Capture: nestsmoke-16-10-11.pcap"
+         href="static/img/maps/map_ASN-nestsmoke-16-10-11.pcap.jpg"><img src="static/img/maps/map_ASN-nestsmoke-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-nestsmoke-16-10-11.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;nestsmoke Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: nestsmoke-16-10-11.pcap"
+         href="static/img/maps/map_Private_RFC_1918-nestsmoke-16-10-11.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-nestsmoke-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-nestsmoke-16-10-11.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;nestsmoke Source Ports&lt;/b&gt;&lt;br /&gt; Capture: nestsmoke-16-10-11.pcap"
+         href="static/img/maps/map_Source_Ports-nestsmoke-16-10-11.pcap.jpg"><img src="static/img/maps/map_Source_Ports-nestsmoke-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-nestsmoke-16-10-11.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;nestsmoke Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: nestsmoke-16-10-11.pcap"
+         href="static/img/maps/map_Destination_Ports-nestsmoke-16-10-11.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-nestsmoke-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b><a href="android-2.html" style="color:blue">android-2</a></b><br /><b>Host:</b> 192.168.1.248<br /><b>Filename:</b> android-2-16-10-12.pcap<br /><b>Packets:</b> 7814<br /><b>Time window:</b> an hour<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-android-2-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;android-2 ASN&lt;/b&gt;&lt;br /&gt; Capture: android-2-16-10-12.pcap"
+         href="static/img/maps/map_ASN-android-2-16-10-12.pcap.jpg"><img src="static/img/maps/map_ASN-android-2-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-android-2-16-10-12.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;android-2 Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: android-2-16-10-12.pcap"
+         href="static/img/maps/map_Private_RFC_1918-android-2-16-10-12.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-android-2-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-android-2-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;android-2 Source Ports&lt;/b&gt;&lt;br /&gt; Capture: android-2-16-10-12.pcap"
+         href="static/img/maps/map_Source_Ports-android-2-16-10-12.pcap.jpg"><img src="static/img/maps/map_Source_Ports-android-2-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-android-2-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;android-2 Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: android-2-16-10-12.pcap"
+         href="static/img/maps/map_Destination_Ports-android-2-16-10-12.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-android-2-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+</ul>
+
+
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PCAP Plot</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <link rel="stylesheet" href="static/css/jquery.fancybox.min.css">
+  <style>
+  body {
+   background-image: url("static/img/grey.png");
+   background-color: #636363;
+  }
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+  #sortable li { margin: 0 5px 5px 5px; padding: 5px; font-size: 1.2em; height: 1.5em; }
+  html>body #sortable li { height: 352px; line-height: 1.2em; }
+  .ui-state-highlight { height: 352px; line-height: 1.2em; }
+  </style>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="static/js/jquery.fancybox.min.js"></script>
+  <script>
+  $( function() {
+    $( "#sortable" ).sortable({
+      placeholder: "ui-state-highlight"
+    });
+    $( "#sortable" ).disableSelection();
+  } );
+  </script>
+</head>
+<body>
+<p align="right"><font color="yellow"><a href="index.html" style="color:yellow">Home</a></font></p>
+<p><font color="white">Showing maps for the latest capture of each device type, click on a device name to see all maps for that device type. Click and drag rows to reorder them.</font></p>
+<p><font color="white">Maps are laid out left to right, top to bottom.  ASN is 1-65536, RFC 1918 is 10.0.0.0/8 followed by 172.16.0.0/12 followed by 192.168.0.0/16 (each square is a /24), Source and Destination Ports are 1-65536.</font></p>
+<p><font color="white">Blue is inbound traffic, Red is outbound traffic, Green is mostly bidirectional traffic.</font></p>
+<ul id="sortable">
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b>windows-laptop</b><br /><b>Host:</b> 192.168.1.208<br /><b>Filename:</b> windows-laptop-16-09-23.pcap<br /><b>Packets:</b> 244765<br /><b>Time window:</b> 3 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-windows-laptop-16-09-23.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop ASN&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-09-23.pcap"
+         href="static/img/maps/map_ASN-windows-laptop-16-09-23.pcap.jpg"><img src="static/img/maps/map_ASN-windows-laptop-16-09-23.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-windows-laptop-16-09-23.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;windows-laptop Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-09-23.pcap"
+         href="static/img/maps/map_Private_RFC_1918-windows-laptop-16-09-23.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-windows-laptop-16-09-23.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-windows-laptop-16-09-23.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Source Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-09-23.pcap"
+         href="static/img/maps/map_Source_Ports-windows-laptop-16-09-23.pcap.jpg"><img src="static/img/maps/map_Source_Ports-windows-laptop-16-09-23.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-windows-laptop-16-09-23.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-09-23.pcap"
+         href="static/img/maps/map_Destination_Ports-windows-laptop-16-09-23.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-windows-laptop-16-09-23.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b>windows-laptop</b><br /><b>Host:</b> 192.168.1.208<br /><b>Filename:</b> windows-laptop-16-10-05.pcap<br /><b>Packets:</b> 492454<br /><b>Time window:</b> 8 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-windows-laptop-16-10-05.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop ASN&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-05.pcap"
+         href="static/img/maps/map_ASN-windows-laptop-16-10-05.pcap.jpg"><img src="static/img/maps/map_ASN-windows-laptop-16-10-05.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-05.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;windows-laptop Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-05.pcap"
+         href="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-05.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-05.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-windows-laptop-16-10-05.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Source Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-05.pcap"
+         href="static/img/maps/map_Source_Ports-windows-laptop-16-10-05.pcap.jpg"><img src="static/img/maps/map_Source_Ports-windows-laptop-16-10-05.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-windows-laptop-16-10-05.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-05.pcap"
+         href="static/img/maps/map_Destination_Ports-windows-laptop-16-10-05.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-windows-laptop-16-10-05.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b>windows-laptop</b><br /><b>Host:</b> 192.168.1.208<br /><b>Filename:</b> windows-laptop-16-10-07.pcap<br /><b>Packets:</b> 262242<br /><b>Time window:</b> 3 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-windows-laptop-16-10-07.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop ASN&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-07.pcap"
+         href="static/img/maps/map_ASN-windows-laptop-16-10-07.pcap.jpg"><img src="static/img/maps/map_ASN-windows-laptop-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-07.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;windows-laptop Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-07.pcap"
+         href="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-07.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-windows-laptop-16-10-07.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Source Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-07.pcap"
+         href="static/img/maps/map_Source_Ports-windows-laptop-16-10-07.pcap.jpg"><img src="static/img/maps/map_Source_Ports-windows-laptop-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-windows-laptop-16-10-07.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-07.pcap"
+         href="static/img/maps/map_Destination_Ports-windows-laptop-16-10-07.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-windows-laptop-16-10-07.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b>windows-laptop</b><br /><b>Host:</b> 192.168.1.208<br /><b>Filename:</b> windows-laptop-16-10-11.pcap<br /><b>Packets:</b> 1222079<br /><b>Time window:</b> 7 hours<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-windows-laptop-16-10-11.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop ASN&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-11.pcap"
+         href="static/img/maps/map_ASN-windows-laptop-16-10-11.pcap.jpg"><img src="static/img/maps/map_ASN-windows-laptop-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-11.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;windows-laptop Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-11.pcap"
+         href="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-11.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-windows-laptop-16-10-11.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Source Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-11.pcap"
+         href="static/img/maps/map_Source_Ports-windows-laptop-16-10-11.pcap.jpg"><img src="static/img/maps/map_Source_Ports-windows-laptop-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-windows-laptop-16-10-11.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-11.pcap"
+         href="static/img/maps/map_Destination_Ports-windows-laptop-16-10-11.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-windows-laptop-16-10-11.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+  <li class="ui-state-default" style="background-color: #999999">
+      <div id="wrapper">
+      <div id="first"><p><b>windows-laptop</b><br /><b>Host:</b> 192.168.1.208<br /><b>Filename:</b> windows-laptop-16-10-12.pcap<br /><b>Packets:</b> 3069526<br /><b>Time window:</b> an hour<br /><br /><b>Left to right:</b><br /><br />&emsp;&bull;&nbsp;Public ASN<br />&emsp;&bull;&nbsp;Private RFC 1918<br />&emsp;&bull;&nbsp;Source Ports<br />&emsp;&bull;&nbsp;Destination Ports</p></div>
+      <div id="second">
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_ASN-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop ASN&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_ASN-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_ASN-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2891"
+         data-height="2891"
+         data-caption="&lt;b&gt;windows-laptop Private RFC 1918&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_Private_RFC_1918-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Source_Ports-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Source Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_Source_Ports-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_Source_Ports-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      <a data-fancybox="gallery"
+         data-srcset="static/img/maps/map_Destination_Ports-windows-laptop-16-10-12.pcap.jpg"
+         data-width="2561"
+         data-height="2561"
+         data-caption="&lt;b&gt;windows-laptop Destination Ports&lt;/b&gt;&lt;br /&gt; Capture: windows-laptop-16-10-12.pcap"
+         href="static/img/maps/map_Destination_Ports-windows-laptop-16-10-12.pcap.jpg"><img src="static/img/maps/map_Destination_Ports-windows-laptop-16-10-12.pcap.jpg" alt="" height="350" width="350">
+      </a>
+      </div>
+      </div>
+  </li>
+
+</ul>
+
+
+</body>
+</html>
