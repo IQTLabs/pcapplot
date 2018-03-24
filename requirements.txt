@@ -1,4 +1,4 @@
-cymruwhois==1.0
+cymruwhois==1.6
 humanize
 pygame
 scapy>=2.3.3
