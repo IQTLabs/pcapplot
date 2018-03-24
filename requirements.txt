@@ -1,4 +1,4 @@
 cymruwhois==1.0
 humanize
-pygame
+pygame==1.9.3
 scapy>=2.3.3
