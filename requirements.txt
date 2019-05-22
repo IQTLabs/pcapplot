@@ -1,4 +1,4 @@
 cymruwhois==1.6
 humanize==0.5.1
 pygame==1.9.6
-scapy>=2.3.3
+scapy==2.4.2
