@@ -2,7 +2,6 @@ FROM ubuntu:18.10
 LABEL maintainer="Charlie Lewis <clewis@iqt.org>"
 
 RUN apt-get update && apt-get install -y \
-    libav-tools \
     libsdl-image1.2-dev \
     libsdl-mixer1.2-dev \
     libsdl-ttf2.0-dev \
