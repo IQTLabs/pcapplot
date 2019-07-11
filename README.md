@@ -24,7 +24,7 @@ Once the image is built, you can run the tool in a container and map in your
 PCAPs via volumes as follows:
 
 ```
-docker run -it -p 8000:8000 \
+docker run -it \
            -v ~/my_local_pcaps:/pcaps \
            -v $(pwd)/www:/pcapplot/www \
            pcapplot
@@ -35,7 +35,7 @@ above), or you can specify a single PCAP file if you like. Here's an example to
 do the later:
 
 ```
-docker run -it -p 8000:8000 \
+docker run -it \
            -v ~/my_local_pcaps:/pcaps \
            -v $(pwd)/www:/pcapplot/www \
            pcapplot \
@@ -44,33 +44,20 @@ docker run -it -p 8000:8000 \
 
 Once the tool is finished processing, it will point you to the location of the
 images it has created (note the volume for `www`, which lets you retain your
-images after the container exits).  It will also point you to the where the
-images are being served up and a link you can browse to see your results.  When
-you're finished you can `ctrl-c` to stop the container.  If you want to add
-more data to your visualization just run the container again with new PCAPs and
-it will add it to the visualization (note the same filename will overwrite any
-pre-existing results with that filename).
+images after the container exits). If you want to add more data to your
+visualization just run the container again with new PCAPs and it will add it to
+the visualization (note the same filename will overwrite any pre-existing
+results with that filename).
 
 You can also run the tool for viewing without adding additional data by using
 the following:
 
 ```
-docker run -it -p 8000:8000 \
+docker run -it \
            -v $(pwd)/www:/pcapplot/www \
            pcapplot \
            []
 ```
 
 If you prefer to just save the images you can add `-s` to the end of the docker
-command and it will just save the image instead of serving up the html files.
-
-# FAQ
-
-If you see flashing in your terminal and error messages that start with this:
-
-```
-ALSA lib confmisc.c:768:(parse_card) cannot find card '0'
-```
-
-That is perfectly normal, it is the UI building the images in a terminal, and
-is safe to ignore.
+command and it will just save the image.
