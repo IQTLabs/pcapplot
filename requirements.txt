@@ -1,4 +1,4 @@
 cymruwhois==1.6
 humanize==0.5.1
-pygame==1.9.6
+Pillow==6.1.0
 scapy==2.4.2

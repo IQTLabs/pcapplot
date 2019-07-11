@@ -1,3 +1,5 @@
+import http.server
+
 from cymruwhois import Client
 from datetime import datetime
 from scapy.utils import PcapReader
@@ -177,7 +179,7 @@ def process_pcaps(pcap_file):
         for column in range(COLUMNS):
             dport_grid[row].append(0)
 
-    print "Reading pcap file " + pcap_file + "...",
+    print("Reading pcap file " + pcap_file + "...")
     sys.stdout.flush()
 
     proto_dict = {17:'UDP', 6:'TCP'}
@@ -213,7 +215,7 @@ def process_pcaps(pcap_file):
                 # packet failed to parse, skipping
                 pass
 
-    print "done"
+    print("done")
 
     ROWS = 289
     COLUMNS = 289
@@ -230,15 +232,14 @@ def process_pcaps(pcap_file):
     COLUMNS = 256
     asn_dict = {}
     c = Client()
-    print
     for host in aggr_dict:
         if len(aggr_dict[host]) > 1:
             # get sent bytes
-            print "host:", host
+            print("host: {0}".format(host))
             with open('www/static/img/maps/manifest.txt', 'a+') as f:
                 f.write(pcap_file.split("/")[-1] + ": " + host + "\n")
             for port in ip_dports[host]:
-                dport_grid[port/ROWS][port%ROWS] = 1
+                dport_grid[int(port/ROWS)][port%ROWS] = 1
             for peer in aggr_dict[host]:
                 try:
                     r = c.lookup(peer)
@@ -249,7 +250,7 @@ def process_pcaps(pcap_file):
                             priv_arr = private_map[".".join(peer.split(".")[:-1])]
                             private_grid[priv_arr[0]][priv_arr[1]][1] += aggr_dict[host][peer]
                         else:
-                            print "found public IP without an ASN:", peer, "bytes out :", aggr_dict[host][peer]
+                            print("found public IP without an ASN: {0} bytes out: {1}".format(peer, aggr_dict[host][peer]))
                     else:
                         # public ip space
                         if r.asn in asn_dict:
@@ -257,12 +258,12 @@ def process_pcaps(pcap_file):
                         else:
                             asn_dict[r.asn] = {'owner': r.owner, 'bytes_out': aggr_dict[host][peer], 'bytes_in': 0}
                 except Exception as e:
-                    print peer, "FAILED TO LOOKUP ASN"
-                    print sys.exc_info()[0], str(e)
+                    print("{0} FAILED TO LOOKUP ASN".format(peer))
+                    print(str(sys.exc_info()[0]) + str(e))
         else:
             if host in ip_dports:
                 for port in ip_dports[host]:
-                    sport_grid[port/ROWS][port%ROWS] = 2
+                    sport_grid[int(port/ROWS)][port%ROWS] = 2
             # get received bytes
             dst = None
             # there is only one to loop through
@@ -277,7 +278,7 @@ def process_pcaps(pcap_file):
                         priv_arr = private_map[".".join(host.split(".")[:-1])]
                         private_grid[priv_arr[0]][priv_arr[1]][0] += aggr_dict[host][dst]
                     else:
-                        print "found public IP without an ASN:", host, "bytes out :", aggr_dict[host][dst]
+                        print("found public IP without an ASN: {0} bytes out: {1}".format(host, aggr_dict[host][dst]))
                 else:
                     # public ip space
                     if r.asn in asn_dict:
@@ -285,8 +286,8 @@ def process_pcaps(pcap_file):
                     else:
                         asn_dict[r.asn] = {'owner': r.owner, 'bytes_in': aggr_dict[host][dst], 'bytes_out': 0}
             except Exception as e:
-                print host, "FAILED TO LOOKUP ASN"
-                print sys.exc_info()[0], str(e)
+                print("{0} FAILED TO LOOKUP ASN".format(host))
+                print(str(sys.exc_info()[0]) + str(e))
 
     asn_grid = []
     for row in range(ROWS):
@@ -298,15 +299,11 @@ def process_pcaps(pcap_file):
         try:
             asn_num = int(asn)
             if asn_num < 65536:
-                asn_grid[asn_num/ROWS][asn_num%ROWS] = [asn_dict[asn]['bytes_in'], asn_dict[asn]['bytes_out']]
+                asn_grid[int(asn_num/ROWS)][asn_num%ROWS] = [asn_dict[asn]['bytes_in'], asn_dict[asn]['bytes_out']]
             else:
-                print "ALERT!!!! high",
-                print "external asn:", asn,
-                print "asn owner:", asn_dict[asn]['owner'],
-                print "total bytes sent:", asn_dict[asn]['bytes_out'],
-                print "total bytes received:", asn_dict[asn]['bytes_in']
+                print("ALERT!!!! high external asn: {0} asn owner: {1} total bytes sent: {2} total bytes received: {3}".format(asn, asn_dict[asn]['owner'], asn_dict[asn]['bytes_out'], asn_dict[asn]['bytes_in']))
         except Exception as e:
-           print str(e)
+            print(str(e))
     return asn_grid, private_grid, sport_grid, dport_grid, packet_count, humanize.naturaldelta(datetime.utcfromtimestamp(end_time) - datetime.utcfromtimestamp(start_time))
 
 def build_html(pcap_stats):
@@ -351,7 +348,7 @@ def build_html(pcap_stats):
     image_paths = []
     for root, dirs, files in os.walk('www/static/img/maps'):
         for file in files:
-            if file.endswith(".jpg"):
+            if file.endswith(".png"):
                 image_paths.append(os.path.join(root, file))
     devices = {}
     for image in image_paths:
@@ -361,10 +358,10 @@ def build_html(pcap_stats):
                     devices["-".join(image.split('-')[1:-3])] = []
                 devices["-".join(image.split('-')[1:-3])].append("-".join(image.split('.')[0].split('-')[-3:]))
             else:
-                print "unexpected filename format, ignoring"
+                print("unexpected filename format, ignoring")
         except Exception as e:
-            print str(e)
-            print "unexpected filename format, ignoring"
+            print(str(e))
+            print("unexpected filename format, ignoring")
 
     # sort images per device
     dev_copy = copy.deepcopy(devices)
@@ -384,10 +381,10 @@ def build_html(pcap_stats):
                     host = line.split(": ")[1].strip()
         tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host, capture, pcap_stats[capture][0], pcap_stats[capture][1])
         prefix = 'static/img/maps/'
-        asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.jpg'
-        private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.jpg'
-        src_path = 'map_Source_Ports-'+device+'-'+devices[device][-1]+'.pcap.jpg'
-        dst_path = 'map_Destination_Ports-'+device+'-'+devices[device][-1]+'.pcap.jpg'
+        asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.png'
+        private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.png'
+        src_path = 'map_Source_Ports-'+device+'-'+devices[device][-1]+'.pcap.png'
+        dst_path = 'map_Destination_Ports-'+device+'-'+devices[device][-1]+'.pcap.png'
 
         html_str += list_obj % (tmp_legend, prefix+asn_path, device, capture,
                                 prefix+asn_path, prefix+asn_path,
@@ -416,10 +413,10 @@ def build_html(pcap_stats):
                         host = line.split(": ")[1].strip()
             tmp_legend = legend % (device, host, capture, pcap_stats[capture][0], pcap_stats[capture][1])
             prefix = 'static/img/maps/'
-            asn_path = 'map_ASN-'+device+'-'+cap+'.pcap.jpg'
-            private_path = 'map_Private_RFC_1918-'+device+'-'+cap+'.pcap.jpg'
-            src_path = 'map_Source_Ports-'+device+'-'+cap+'.pcap.jpg'
-            dst_path = 'map_Destination_Ports-'+device+'-'+cap+'.pcap.jpg'
+            asn_path = 'map_ASN-'+device+'-'+cap+'.pcap.png'
+            private_path = 'map_Private_RFC_1918-'+device+'-'+cap+'.pcap.png'
+            src_path = 'map_Source_Ports-'+device+'-'+cap+'.pcap.png'
+            dst_path = 'map_Destination_Ports-'+device+'-'+cap+'.pcap.png'
 
             device_html_str += list_obj % (tmp_legend, prefix+asn_path, device,
                                            capture, prefix+asn_path,
@@ -448,11 +445,11 @@ def build_images(pcaps, processed_pcaps, pcap_stats):
             processed_pcaps.append(pcap_file)
             pcap_stats[pcap_file.split("/")[-1]] = (packet_count, str(time_delta))
         except Exception as e:
-            print str(e)
+            print(str(e))
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
-            return processed_pcaps
+            print(str(exc_type) + str(fname) + str(exc_tb.tb_lineno))
+            return processed_pcaps, pcap_stats
     return processed_pcaps, pcap_stats
 
 def main():
@@ -479,44 +476,24 @@ def main():
                         pcaps.append(os.path.join(root, file))
 
     if pcaps:
-        print "Found the following PCAP files:"
+        print("Found the following PCAP files:")
     for pcap_file in pcaps:
-        print pcap_file
-    print
+        print(pcap_file)
 
     processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats)
-    #os.system('reset')
-    #os.system('stty sane')
     pcaps = list(set(pcaps)-set(processed_pcaps))
     if pcaps:
-        print "FAILURE, remaining pcaps: "
-        print pcaps
-        print
-        print "Try again with the remaining PCAPs with this command:"
-        print
-        print 'python pcapplot.py "' + str(pcaps) + '"'
-        print
+        print("FAILURE, remaining pcaps: ")
+        print(pcaps)
+        print("Try again with the remaining PCAPs with this command:")
+        print('python pcapplot.py "' + str(pcaps) + '"')
         return
+
+    print("Images are located in: 'www/static/img/maps'")
 
     if sys.argv[-1] != '-s':
         if sys.argv[1] != '[]':
             build_html(pcap_stats)
-
-        try:
-            call(["open", "www/index.html"])
-            print "Opening a browser window to display results...",
-        except:
-            import SimpleHTTPServer
-            import SocketServer
-
-            PORT = 8000
-            Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-            httpd = SocketServer.TCPServer(("", PORT), Handler)
-
-            print "Open a browser window to display results, serving at http://0.0.0.0:" + str(PORT)+"/www/index.html"
-            httpd.serve_forever()
-
-    print "Images are located in: 'www/static/img/maps'"
 
     return
 
