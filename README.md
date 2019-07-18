@@ -27,7 +27,8 @@ PCAPs via volumes as follows:
 docker run -it \
            -v ~/my_local_pcaps:/pcaps \
            -v $(pwd)/www:/pcapplot/www \
-           pcapplot
+           pcapplot \
+           /pcaps
 ```
 
 This tool can take either a directory of PCAPs and process them all (like the
@@ -48,16 +49,3 @@ images after the container exits). If you want to add more data to your
 visualization just run the container again with new PCAPs and it will add it to
 the visualization (note the same filename will overwrite any pre-existing
 results with that filename).
-
-You can also run the tool for viewing without adding additional data by using
-the following:
-
-```
-docker run -it \
-           -v $(pwd)/www:/pcapplot/www \
-           pcapplot \
-           []
-```
-
-If you prefer to just save the images you can add `-s` to the end of the docker
-command and it will just save the image.

@@ -7,9 +7,12 @@ from scapy.layers.inet import IP
 from subprocess import call
 
 import ast
+import base64
 import copy
 import humanize
+import json
 import os
+import pika
 import shutil
 import signal
 import sys
@@ -434,14 +437,17 @@ def build_html(pcap_stats):
             f.write(filedata)
     return
 
-def build_images(pcaps, processed_pcaps, pcap_stats):
+def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='messenger'):
     for pcap_file in pcaps:
         try:
+            images = []
             asn_grid, private_grid, sport_grid, dport_grid, packet_count, time_delta = process_pcaps(pcap_file)
-            draw(asn_grid, "ASN-"+pcap_file.split("/")[-1])
-            draw(private_grid, "Private_RFC_1918-"+pcap_file.split("/")[-1], ROWS=289, COLUMNS=289, GRID_LINE=17)
-            draw(sport_grid, "Source_Ports-"+pcap_file.split("/")[-1])
-            draw(dport_grid, "Destination_Ports-"+pcap_file.split("/")[-1])
+            images.append(draw(asn_grid, "ASN-"+pcap_file.split("/")[-1]))
+            images.append(draw(private_grid, "Private_RFC_1918-"+pcap_file.split("/")[-1], ROWS=289, COLUMNS=289, GRID_LINE=17))
+            images.append(draw(sport_grid, "Source_Ports-"+pcap_file.split("/")[-1]))
+            images.append(draw(dport_grid, "Destination_Ports-"+pcap_file.split("/")[-1]))
+            if rabbit:
+                send_rabbit_msg(images, host=rabbit_host)
             processed_pcaps.append(pcap_file)
             pcap_stats[pcap_file.split("/")[-1]] = (packet_count, str(time_delta))
         except Exception as e:
@@ -452,18 +458,36 @@ def build_images(pcaps, processed_pcaps, pcap_stats):
             return processed_pcaps, pcap_stats
     return processed_pcaps, pcap_stats
 
+def send_rabbit_msg(images, host='messenger', port=5672, queue='task_queue', exchange='', routing_key='task_queue'):
+    params = pika.ConnectionParameters(host=host, port=port)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+    channel.queue_declare(queue=queue, durable=True)
+    uid = os.getenv('id', 'None')
+    file_path = os.getenv('file_path', 'None')
+    for counter, image in enumerate(images):
+        with open(image, 'rb') as f:
+            encoded_string = base64.b64encode(f.read())
+        body = {'id': uid, 'pcap_path': file_path, 'img_path': image, 'data': encoded_string.decode('utf-8'), 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': '0.1.0'}}
+        channel.basic_publish(exchange=exchange,
+                              routing_key=routing_key,
+                              body=json.dumps(body),
+                              properties=pika.BasicProperties(
+                              delivery_mode=2,
+                             ))
+        print(" [X] %s UTC %r %r" % (str(datetime.utcnow()),
+                                  str(body['id']), str(body['img_path'])))
+    return
+
 def main():
     signal.signal(signal.SIGINT, signal_handler)
     pcaps = []
     processed_pcaps = []
     pcap_stats = {}
-    if sys.argv[1] == '-s':
-        path = "/pcaps"
+    if not sys.argv[1].startswith("/pcaps"):
+        path = "/pcaps/"+sys.argv[1]
     else:
-        if sys.argv[1] != '[]' and not sys.argv[1].startswith("/pcaps"):
-            path = "/pcaps/"+sys.argv[1]
-        else:
-            path = sys.argv[1]
+        path = sys.argv[1]
     if path.endswith('.pcap'):
         pcaps.append(path)
     else:
@@ -480,7 +504,12 @@ def main():
     for pcap_file in pcaps:
         print(pcap_file)
 
-    processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats)
+    if sys.argv[-2] == '-r':
+        processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats, rabbit=True, rabbit_host=sys.argv[-1])
+    elif sys.argv[-1] == '-r':
+        processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats, rabbit=True)
+    else:
+        processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats)
     pcaps = list(set(pcaps)-set(processed_pcaps))
     if pcaps:
         print("FAILURE, remaining pcaps: ")
@@ -490,10 +519,6 @@ def main():
         return
 
     print("Images are located in: 'www/static/img/maps'")
-
-    if sys.argv[-1] != '-s':
-        if sys.argv[1] != '[]':
-            build_html(pcap_stats)
 
     return
 
