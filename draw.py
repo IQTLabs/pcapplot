@@ -148,6 +148,7 @@ def draw(grid, grid_type, ROWS=256, COLUMNS=256, GRID_LINE=16):
                 screen.rectangle(dims, fill=color)
 
     im.save("www/static/img/maps/map_" + "_".join(grid_type.split()) + ".png")
+    return "www/static/img/maps/map_" + "_".join(grid_type.split()) + ".png"
 
 if __name__ == "__main__":
     print(interpolate_tuple((0,255,255), (255,0,0), 100))
