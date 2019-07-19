@@ -520,6 +520,8 @@ def main():
 
     print("Images are located in: 'www/static/img/maps'")
 
+    build_html(pcap_stats)
+
     return
 
 if __name__ == "__main__":
