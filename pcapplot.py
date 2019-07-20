@@ -446,10 +446,24 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
             images.append(draw(private_grid, "Private_RFC_1918-"+pcap_file.split("/")[-1], ROWS=289, COLUMNS=289, GRID_LINE=17))
             images.append(draw(sport_grid, "Source_Ports-"+pcap_file.split("/")[-1]))
             images.append(draw(dport_grid, "Destination_Ports-"+pcap_file.split("/")[-1]))
-            if rabbit:
-                send_rabbit_msg(images, host=rabbit_host)
             processed_pcaps.append(pcap_file)
-            pcap_stats[pcap_file.split("/")[-1]] = (packet_count, str(time_delta))
+            host = ''
+            with open('www/static/img/maps/manifest.txt', 'r') as f:
+                for line in f:
+                    if line.startswith(pcap_file.split("/")[-1]):
+                        host = line.split(": ")[1].strip()
+            pcap_stats[pcap_file.split("/")[-1]] = (packet_count, str(time_delta), host)
+            if rabbit:
+                channel = connect_rabbit(host=rabbit_host)
+                uid = os.getenv('id', 'None')
+                file_path = os.getenv('file_path', 'None')
+                for counter, image in enumerate(images):
+                    with open(image, 'rb') as f:
+                        encoded_string = base64.b64encode(f.read())
+                    body = {'id': uid, 'type': 'data', 'img_path': image, 'data': encoded_string.decode('utf-8'), 'pcap_path': file_path, 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': '0.1.0'}}
+                    send_rabbit_msg(body, channel)
+                body = {'id': uid, 'type': 'metadata', 'pcap_path': file_path, 'data': pcap_stats, 'results': {'tool': 'pcapplot', 'version': '0.1.0'}}
+                send_rabbit_msg(body, channel)
         except Exception as e:
             print(str(e))
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -458,25 +472,22 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
             return processed_pcaps, pcap_stats
     return processed_pcaps, pcap_stats
 
-def send_rabbit_msg(images, host='messenger', port=5672, queue='task_queue', exchange='', routing_key='task_queue'):
+def connect_rabbit(host='messenger', port=5672, queue='task_queue'):
     params = pika.ConnectionParameters(host=host, port=port)
     connection = pika.BlockingConnection(params)
     channel = connection.channel()
     channel.queue_declare(queue=queue, durable=True)
-    uid = os.getenv('id', 'None')
-    file_path = os.getenv('file_path', 'None')
-    for counter, image in enumerate(images):
-        with open(image, 'rb') as f:
-            encoded_string = base64.b64encode(f.read())
-        body = {'id': uid, 'pcap_path': file_path, 'img_path': image, 'data': encoded_string.decode('utf-8'), 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': '0.1.0'}}
-        channel.basic_publish(exchange=exchange,
-                              routing_key=routing_key,
-                              body=json.dumps(body),
-                              properties=pika.BasicProperties(
-                              delivery_mode=2,
-                             ))
-        print(" [X] %s UTC %r %r" % (str(datetime.utcnow()),
-                                  str(body['id']), str(body['img_path'])))
+    return channel
+
+def send_rabbit_msg(msg, channel, exchange='', routing_key='task_queue'):
+    channel.basic_publish(exchange=exchange,
+                          routing_key=routing_key,
+                          body=json.dumps(msg),
+                          properties=pika.BasicProperties(
+                          delivery_mode=2,
+                         ))
+    print(" [X] %s UTC %r %r" % (str(datetime.utcnow()),
+                                 str(msg['id']), str(msg['pcap_path'])))
     return
 
 def main():
