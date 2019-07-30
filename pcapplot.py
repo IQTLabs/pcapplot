@@ -460,9 +460,9 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
                 for counter, image in enumerate(images):
                     with open(image, 'rb') as f:
                         encoded_string = base64.b64encode(f.read())
-                    body = {'id': uid, 'type': 'data', 'img_path': image, 'data': encoded_string.decode('utf-8'), 'pcap_path': file_path, 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': '0.1.0'}}
+                    body = {'id': uid, 'type': 'data', 'img_path': image, 'data': encoded_string.decode('utf-8'), 'pcap_path': file_path, 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': get_version()}}
                     send_rabbit_msg(body, channel)
-                body = {'id': uid, 'type': 'metadata', 'pcap_path': file_path, 'data': pcap_stats, 'results': {'tool': 'pcapplot', 'version': '0.1.0'}}
+                body = {'id': uid, 'type': 'metadata', 'pcap_path': file_path, 'data': pcap_stats, 'results': {'tool': 'pcapplot', 'version': get_version()}}
                 send_rabbit_msg(body, channel)
         except Exception as e:
             print(str(e))
@@ -489,6 +489,13 @@ def send_rabbit_msg(msg, channel, exchange='', routing_key='task_queue'):
     print(" [X] %s UTC %r %r" % (str(datetime.utcnow()),
                                  str(msg['id']), str(msg['pcap_path'])))
     return
+
+def get_version():
+    version = ''
+    with open('VERSION', 'r') as f:
+        for line in f:
+            version = line.strip()
+    return version
 
 def main():
     signal.signal(signal.SIGINT, signal_handler)
