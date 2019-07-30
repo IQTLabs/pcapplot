@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     python3-pip
 
+COPY VERSION /pcapplot/VERSION
 COPY requirements.txt /pcapplot/requirements.txt
 RUN pip3 install -r /pcapplot/requirements.txt
 COPY . /pcapplot
