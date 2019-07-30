@@ -460,9 +460,9 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
                 for counter, image in enumerate(images):
                     with open(image, 'rb') as f:
                         encoded_string = base64.b64encode(f.read())
-                    body = {'id': uid, 'type': 'data', 'img_path': image, 'data': encoded_string.decode('utf-8'), 'pcap_path': file_path, 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': get_version()}}
+                    body = {'id': uid, 'type': 'data', 'img_path': image, 'data': encoded_string.decode('utf-8'), 'file_path': file_path, 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': get_version()}}
                     send_rabbit_msg(body, channel)
-                body = {'id': uid, 'type': 'metadata', 'pcap_path': file_path, 'data': pcap_stats, 'results': {'tool': 'pcapplot', 'version': get_version()}}
+                body = {'id': uid, 'type': 'metadata', 'file_path': file_path, 'data': pcap_stats, 'results': {'tool': 'pcapplot', 'version': get_version()}}
                 send_rabbit_msg(body, channel)
         except Exception as e:
             print(str(e))
@@ -487,7 +487,7 @@ def send_rabbit_msg(msg, channel, exchange='', routing_key='task_queue'):
                           delivery_mode=2,
                          ))
     print(" [X] %s UTC %r %r" % (str(datetime.utcnow()),
-                                 str(msg['id']), str(msg['pcap_path'])))
+                                 str(msg['id']), str(msg['file_path'])))
     return
 
 def get_version():
@@ -502,13 +502,11 @@ def main():
     pcaps = []
     processed_pcaps = []
     pcap_stats = {}
-    if not sys.argv[1].startswith("/pcaps"):
-        path = "/pcaps/"+sys.argv[1]
-    else:
-        path = sys.argv[1]
+    path = sys.argv[1]
     if path.endswith('.pcap'):
         pcaps.append(path)
     else:
+        print(path)
         try:
             pcaps = ast.literal_eval(path)
         except:
@@ -522,9 +520,7 @@ def main():
     for pcap_file in pcaps:
         print(pcap_file)
 
-    if sys.argv[-2] == '-r':
-        processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats, rabbit=True, rabbit_host=sys.argv[-1])
-    elif sys.argv[-1] == '-r':
+    if 'rabbit' in os.environ and os.environ['rabbit'] == 'true':
         processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats, rabbit=True)
     else:
         processed_pcaps, pcap_stats = build_images(pcaps, processed_pcaps, pcap_stats)
