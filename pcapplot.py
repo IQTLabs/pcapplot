@@ -470,6 +470,12 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(str(exc_type) + str(fname) + str(exc_tb.tb_lineno))
             return processed_pcaps, pcap_stats
+    if rabbit:
+        channel = connect_rabbit(host=rabbit_host)
+        uid = os.getenv('id', 'None')
+        file_path = os.getenv('file_path', 'None')
+        body = {'id': uid, 'type': 'metadata', 'file_path': file_path, 'data': '', 'results': {'tool': 'pcapplot', 'version': get_version()}}
+        send_rabbit_msg(body, channel)
     return processed_pcaps, pcap_stats
 
 def connect_rabbit(host='messenger', port=5672, queue='task_queue'):
