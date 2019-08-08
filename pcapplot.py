@@ -463,8 +463,10 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
                         encoded_string = base64.b64encode(f.read())
                     body = {'id': uid, 'type': 'data', 'img_path': image, 'data': encoded_string.decode('utf-8'), 'file_path': file_path, 'pcap': os.path.split(pcap_file)[-1], 'results': {'counter': counter+1, 'total': len(images), 'tool': 'pcapplot', 'version': get_version()}}
                     send_rabbit_msg(body, channel)
-                pcap_stats['pcap'] = os.path.split(pcap_file)[-1]
-                body = {'id': uid, 'type': 'metadata', 'file_path': file_path, 'data': pcap_stats, 'results': {'tool': 'pcapplot', 'version': get_version()}}
+                data = {}
+                data['pcap'] = os.path.split(pcap_file)[-1]
+                data[pcap_file.split("/")[-1]] = (packet_count, str(time_delta), host)
+                body = {'id': uid, 'type': 'metadata', 'file_path': file_path, 'data': data, 'results': {'tool': 'pcapplot', 'version': get_version()}}
                 send_rabbit_msg(body, channel)
         except Exception as e:
             print(str(e))
