@@ -438,6 +438,8 @@ def build_html(pcap_stats):
     return
 
 def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='messenger'):
+    if rabbit:
+        channel = connect_rabbit(host=rabbit_host)
     for pcap_file in pcaps:
         try:
             images = []
@@ -454,7 +456,6 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
                         host = line.split(": ")[1].strip()
             pcap_stats[pcap_file.split("/")[-1]] = (packet_count, str(time_delta), host)
             if rabbit:
-                channel = connect_rabbit(host=rabbit_host)
                 uid = os.getenv('id', 'None')
                 file_path = os.getenv('file_path', 'None')
                 for counter, image in enumerate(images):
@@ -471,7 +472,6 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
             print(str(exc_type) + str(fname) + str(exc_tb.tb_lineno))
             return processed_pcaps, pcap_stats
     if rabbit:
-        channel = connect_rabbit(host=rabbit_host)
         uid = os.getenv('id', 'None')
         file_path = os.getenv('file_path', 'None')
         body = {'id': uid, 'type': 'metadata', 'file_path': file_path, 'data': '', 'results': {'tool': 'pcapplot', 'version': get_version()}}
@@ -518,7 +518,7 @@ def main():
         except:
             for root, dirs, files in os.walk(path):
                 for file in files:
-                    if file.endswith(".pcap"):
+                    if file.endswith(".pcap") and 'miscellaneous' not in file:
                         pcaps.append(os.path.join(root, file))
 
     if pcaps:
