@@ -382,7 +382,7 @@ def build_html(pcap_stats):
             for line in f:
                 if line.startswith(capture):
                     host = line.split(": ")[1].strip()
-        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host, capture, pcap_stats[capture][0], pcap_stats[capture][1])
+        tmp_legend = legend % ('<a href="'+device+'.html" style="color:blue">'+device+'</a>', host, capture[:40]+'...', pcap_stats[capture][0], pcap_stats[capture][1])
         prefix = 'static/img/maps/'
         asn_path = 'map_ASN-'+device+'-'+devices[device][-1]+'.pcap.png'
         private_path = 'map_Private_RFC_1918-'+device+'-'+devices[device][-1]+'.pcap.png'
