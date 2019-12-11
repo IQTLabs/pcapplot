@@ -473,7 +473,6 @@ def build_images(pcaps, processed_pcaps, pcap_stats, rabbit=False, rabbit_host='
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(str(exc_type) + str(fname) + str(exc_tb.tb_lineno))
-            return processed_pcaps, pcap_stats
     if rabbit:
         uid = os.getenv('id', 'None')
         file_path = os.getenv('file_path', 'None')
