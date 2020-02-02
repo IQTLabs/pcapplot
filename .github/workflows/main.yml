@@ -17,9 +17,15 @@ jobs:
       uses: crazy-max/ghaction-docker-buildx@v1.0.5
       with:
         version: latest
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+    - name: Change for master
+      id: change_version
+      run: if [ "$steps.get_version.outputs.VERSION" == "master" ]; then echo ::set-output name=VERSION::latest; else echo ::set-output name=VERSION::${{ steps.get_version.outputs.VERSION }}; fi
     - name: Available platforms
       run: |
         docker buildx build \
           --platform linux/amd64,linux/arm/v7,linux/arm64 \
           --output "type=image,push=true" \
-          .
+          -t cyberrebooot/pcapplot:${{ steps.change_version.outputs.VERSION }} .
