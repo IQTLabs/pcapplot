@@ -24,8 +24,12 @@ jobs:
       id: change_version
       run: if [ "$steps.get_version.outputs.VERSION" == "master" ]; then echo ::set-output name=VERSION::latest; else echo ::set-output name=VERSION::${{ steps.get_version.outputs.VERSION }}; fi
     - name: Available platforms
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
       run: |
         docker buildx build \
           --platform linux/amd64 \
-          --output "type=image,push=true" \
+          --push \
+          --
           -t cyberrebooot/pcapplot:${{ steps.change_version.outputs.VERSION }} .
