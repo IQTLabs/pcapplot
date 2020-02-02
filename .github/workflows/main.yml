@@ -18,6 +18,8 @@ jobs:
         password: ${{ secrets.DOCKER_TOKEN }}
     - name: Set up Docker Buildx
       id: buildx
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
       uses: crazy-max/ghaction-docker-buildx@v1.0.5
       with:
         version: latest
@@ -27,7 +29,9 @@ jobs:
     - name: Change for master
       id: change_version
       run: if [ "$steps.get_version.outputs.VERSION" == "master" ]; then echo ::set-output name=VERSION::latest; else echo ::set-output name=VERSION::${{ steps.get_version.outputs.VERSION }}; fi
-    - name: Available platforms
+    - name: Build and push platforms
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
       run: |
         docker buildx build \
           --platform linux/amd64 \
