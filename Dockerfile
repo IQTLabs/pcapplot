@@ -1,9 +1,14 @@
-FROM ubuntu:19.10
+FROM alpine:3.10
 LABEL maintainer="Charlie Lewis <clewis@iqt.org>"
 
-RUN apt-get update && apt-get install -y \
+RUN apk update --no-cache && apk add --no-cache \
+    build-base \
+    jpeg-dev \
     python3-dev \
-    python3-pip
+    py3-pip \
+    zlib-dev && \
+    rm -rf /var/cache/* && \
+    rm -rf /root/.cache/*
 
 COPY VERSION /pcapplot/VERSION
 COPY requirements.txt /pcapplot/requirements.txt
