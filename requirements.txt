@@ -1,5 +1,5 @@
 cymruwhois==1.6
-humanize==2.4.0
+humanize==2.4.1
 Pillow==7.1.2
 pika==1.1.0
 scapy==2.4.3
