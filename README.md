@@ -15,7 +15,7 @@ To get started, first ensure you have Docker and Git installed, then build the
 image for this tool as follows:
 
 ```
-git clone https://github.com/CyberReboot/pcapplot
+git clone https://github.com/IQTLabs/pcapplot
 cd pcapplot
 docker build -t pcapplot .
 ```
